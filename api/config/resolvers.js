@@ -328,6 +328,21 @@ module.exports.createMessageResolver = function (
             isDeleted: false,
           };
         }
+        if (args.chatId && args.announcementChannelId) {
+          filter = {
+            chatId: args.chatId,
+            isDeleted: false,
+            isAnnouncement: true,
+            announcementChannelId: args.announcementChannelId,
+          }
+        }
+        if (args.chatId && args.isNormal) {
+          filter = {
+            chatId: args.chatId,
+            isDeleted: false,
+            isAnnouncement: false,
+          }
+        }
         return await database.models[MODEL_NAME_MESSAGE].findAll({
           where: {
             ...filter,
