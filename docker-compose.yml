@@ -1,7 +1,7 @@
 services:
-  relatedchat_api:
-    image: relatedcode/relatedchat-api:latest
-    container_name: relatedchat_api
+  sharemessenger-api:
+    image: khmin1104/sharemessenger-api:0.1
+    container_name: sharemessenger-api
     ports:
       - "4001:4001"
     depends_on:
@@ -15,7 +15,7 @@ services:
     ports:
       - "80:80"
     depends_on:
-      - relatedchat_api
+      - sharemessenger-api
 
   gqlserver:
     image: relatedcode/gqlserver:latest
