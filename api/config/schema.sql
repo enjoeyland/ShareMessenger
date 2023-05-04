@@ -14,8 +14,9 @@ create table
         "workspaceId" varchar(255) not null,
         "isDeleted" boolean not null default false,
         "createdAt" timestamptz not null default now(),
-        "updatedAt" timestamptz not null default now() "announcementSubscribers" text [] not null,
-        "announcementPublishers" text [] not null,
+        "updatedAt" timestamptz not null default now(),
+        "announcementSubscribers" text [] not null,
+        "announcementPublishers" text [] not null
     );
 
 create table
@@ -65,8 +66,9 @@ create table
         "thumbnailURL" varchar(255),
         "workspaceId" varchar(255) not null,
         "createdAt" timestamptz not null default now(),
-        "updatedAt" timestamptz not null default now() "isAnnouncement" boolean not null default false,
-        "announcementChannelId" varchar(255) not null,
+        "updatedAt" timestamptz not null default now(),
+        "isAnnouncement" boolean not null default false,
+        "announcementChannelId" varchar(255) not null
     );
 
 create table
