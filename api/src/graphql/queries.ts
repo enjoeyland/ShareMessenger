@@ -17,6 +17,8 @@ export const GET_CHANNEL = gql`
       workspaceId
       createdAt
       updatedAt
+      announcementSubscribers
+      announcementPublishers
     }
   }
 `;
@@ -38,6 +40,8 @@ export const LIST_CHANNELS = gql`
       workspaceId
       createdAt
       updatedAt
+      announcementSubscribers
+      announcementPublishers
     }
   }
 `;
@@ -128,13 +132,15 @@ export const GET_MESSAGE = gql`
       workspaceId
       createdAt
       updatedAt
+      isAnnouncement
+      announcementChannelId
     }
   }
 `;
 
 export const LIST_MESSAGES = gql`
-  query ListMessages($updatedAt: Date, $chatId: String, $limit: Int, $nextToken: String) {
-    listMessages(updatedAt: $updatedAt, chatId: $chatId, limit: $limit, nextToken: $nextToken) {
+  query ListMessages($updatedAt: Date, $chatId: String, $isAnnouncement: Boolean, $announcementChannelId: String, $limit: Int, $nextToken: String) {
+    listMessages(updatedAt: $updatedAt, chatId: $chatId, isAnnouncement: $isAnnouncement, announcementChannelId: $announcementChannelId, limit: $limit, nextToken: $nextToken) {
       objectId
       chatId
       chatType
@@ -156,6 +162,8 @@ export const LIST_MESSAGES = gql`
       workspaceId
       createdAt
       updatedAt
+      isAnnouncement
+      announcementChannelId
     }
   }
 `;

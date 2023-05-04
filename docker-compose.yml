@@ -1,6 +1,6 @@
 services:
   sharemessenger-api:
-    image: khmin1104/sharemessenger-api:0.1
+    image: khmin1104/sharemessenger-api:1.0
     container_name: sharemessenger-api
     ports:
       - "4001:4001"

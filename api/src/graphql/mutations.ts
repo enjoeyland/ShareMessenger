@@ -17,6 +17,8 @@ export const CREATE_CHANNEL = gql`
       workspaceId
       createdAt
       updatedAt
+      announcementSubscribers
+      announcementPublishers
     }
   }
 `;
@@ -38,6 +40,8 @@ export const UPDATE_CHANNEL = gql`
       workspaceId
       createdAt
       updatedAt
+      announcementSubscribers
+      announcementPublishers
     }
   }
 `;
@@ -128,6 +132,8 @@ export const CREATE_MESSAGE = gql`
       workspaceId
       createdAt
       updatedAt
+      isAnnouncement
+      announcementChannelId
     }
   }
 `;
@@ -156,6 +162,8 @@ export const UPDATE_MESSAGE = gql`
       workspaceId
       createdAt
       updatedAt
+      isAnnouncement
+      announcementChannelId
     }
   }
 `;

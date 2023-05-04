@@ -123,6 +123,8 @@ export const createMessage = async (
           counter: lastMessageCounter + 1,
           isDeleted: false,
           isEdited: false,
+          isAnnouncement: false,
+          announcementChannelId: null,
         },
       })
     );

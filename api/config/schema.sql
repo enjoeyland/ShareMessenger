@@ -15,8 +15,8 @@ create table
         "isDeleted" boolean not null default false,
         "createdAt" timestamptz not null default now(),
         "updatedAt" timestamptz not null default now(),
-        "announcementSubscribers" text [] not null,
-        "announcementPublishers" text [] not null
+        "announcementSubscribers" text [],
+        "announcementPublishers" text []
     );
 
 create table
@@ -68,7 +68,7 @@ create table
         "createdAt" timestamptz not null default now(),
         "updatedAt" timestamptz not null default now(),
         "isAnnouncement" boolean not null default false,
-        "announcementChannelId" varchar(255) not null
+        "announcementChannelId" varchar(255)
     );
 
 create table

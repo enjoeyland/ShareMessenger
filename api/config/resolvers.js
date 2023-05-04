@@ -321,26 +321,23 @@ module.exports.createMessageResolver = function (
               [Operation.gt]: args.updatedAt,
             },
           };
-        }
-        if (args.chatId) {
+        } else if (args.chatId) {
           filter = {
             chatId: args.chatId,
             isDeleted: false,
           };
-        }
-        if (args.chatId && args.announcementChannelId) {
+        } else if (args.chatId && !args.isAnnouncement) {
           filter = {
             chatId: args.chatId,
             isDeleted: false,
-            isAnnouncement: true,
-            announcementChannelId: args.announcementChannelId,
+            isAnnouncement: args.isAnnouncement,
           }
-        }
-        if (args.chatId && args.isNormal) {
+        } else if (args.chatId && args.isAnnouncement &&  args.announcementChannelId) {
           filter = {
             chatId: args.chatId,
             isDeleted: false,
-            isAnnouncement: false,
+            isAnnouncement: args.isAnnouncement,
+            announcementChannelId: args.announcementChannelId,
           }
         }
         return await database.models[MODEL_NAME_MESSAGE].findAll({

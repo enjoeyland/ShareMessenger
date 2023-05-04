@@ -94,6 +94,8 @@ export const createChannel = async (
           topic: "",
           details: details || "",
           lastMessageText: "",
+          announcementSubscribers: [],
+          announcementPublishers: [],
         },
       })
     );

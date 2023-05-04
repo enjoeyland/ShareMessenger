@@ -148,7 +148,7 @@ type Query {
   listMessages(
     updatedAt: Date
     chatId: String
-    isNormal: Boolean
+    isAnnouncement: Boolean
     announcementChannelId: String
     limit: Int
     nextToken: String
