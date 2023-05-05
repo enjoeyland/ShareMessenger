@@ -397,6 +397,111 @@ export const deleteMember = async (
   }
 };
 
+export const subscribe = async (
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction
+) => {
+  try {
+    const { id: subscriberChannelId, channelId: publisherChannelId } = req.params;
+    const { uid } = res.locals;
+
+    const { getChannel: subscriberChannel } = await graphQLClient(
+      res.locals.token
+    ).request(GET_CHANNEL, {
+      objectId: subscriberChannelId,
+    });
+
+    const { getChannel: publisherChannel } = await graphQLClient(
+      res.locals.token
+    ).request(GET_CHANNEL, {
+      objectId: publisherChannelId,
+    });
+
+    if (subscriberChannel.workspaceId !== publisherChannel.workspaceId)
+      throw new Error("Two channels are not in same workspce.");
+
+    const { getWorkspace: workspace } = await graphQLClient(
+      res.locals.token
+    ).request(GET_WORKSPACE, {
+      objectId: subscriberChannel.workspaceId,
+    });
+
+    if (!workspace.members.includes(uid))
+      throw new Error("The user is not in this workspace.");
+
+    // TODO: 여기서부터
+    await graphQLClient(res.locals.token).request(UPDATE_CHANNEL, {
+      input: {
+        objectId: subscriberChannelId,
+        announcementPublishers: arrayUnion(subscriberChannel.announcementPublishers, publisherChannelId),
+      },
+    });
+
+    await graphQLClient(res.locals.token).request(UPDATE_CHANNEL, {
+      input: {
+        objectId: publisherChannelId,
+        announcementSubscribers: arrayUnion(publisherChannel.announcementSubscribers, subscriberChannelId),
+      },
+    });
+
+    res.locals.data = {
+      success: true,
+    };
+    return next();
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export const unsbuscribe = async (
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction
+) => {
+  try {
+    const { id: subscriberChannelId, channelId: publisherChannelId } = req.params;
+    const { uid } = res.locals;
+
+
+    const { getChannel: subscriberChannel } = await graphQLClient(
+      res.locals.token
+    ).request(GET_CHANNEL, {
+      objectId: subscriberChannelId,
+    });
+
+    const { getChannel: publisherChannel } = await graphQLClient(
+      res.locals.token
+    ).request(GET_CHANNEL, {
+      objectId: publisherChannelId,
+    });
+
+    if (!(subscriberChannel.members.includes(uid) || publisherChannel.members.includes(uid)))
+      throw new Error("The user is not in the channel.");
+
+    await graphQLClient(res.locals.token).request(UPDATE_CHANNEL, {
+      input: {
+        objectId: subscriberChannelId,
+        announcementPublishers: arrayRemove(subscriberChannel.announcementPublishers, publisherChannelId),
+      },
+    });
+
+    await graphQLClient(res.locals.token).request(UPDATE_CHANNEL, {
+      input: {
+        objectId: publisherChannelId,
+        announcementSubscribers: arrayRemove(publisherChannel.announcementSubscribers, subscriberChannelId),
+      },
+    });
+
+    res.locals.data = {
+      success: true,
+    };
+    return next();
+  } catch (err) {
+    return next(err);
+  }
+};
+
 export const typingIndicator = async (
   req: express.Request,
   res: express.Response,

@@ -56,6 +56,8 @@ channelsRouter.post("/", channels.createChannel);
 channelsRouter.post("/:id", channels.updateChannel);
 channelsRouter.post("/:id/members", channels.addMember);
 channelsRouter.delete("/:id/members/:userId", channels.deleteMember);
+channelsRouter.post("/:id/subscribe/:channelId", channels.subscribe);
+channelsRouter.delete("/:id/unsubscribe/:channelId", channels.unsbuscribe);
 channelsRouter.delete("/:id", channels.deleteChannel);
 channelsRouter.post("/:id/archive", channels.archiveChannel);
 channelsRouter.post("/:id/unarchive", channels.unarchiveChannel);
