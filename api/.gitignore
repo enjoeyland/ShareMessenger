@@ -74,3 +74,4 @@ dist
 s3-rm.sh
 
 private.py
+__pycache__
