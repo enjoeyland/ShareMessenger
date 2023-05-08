@@ -430,7 +430,6 @@ export const subscribe = async (
     if (!workspace.members.includes(uid))
       throw new Error("The user is not in this workspace.");
 
-    // TODO: 여기서부터
     await graphQLClient(res.locals.token).request(UPDATE_CHANNEL, {
       input: {
         objectId: subscriberChannelId,

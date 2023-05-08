@@ -26,6 +26,13 @@ export const createUser = async (
     });
     const uid = user.uid;
 
+    //TODO: 어떻게 get user 하는지 찾아 idToken을 찾기
+    //TODO: android\lib\auth.js #101줄 /auth/login
+    //TODO: postman으로 authorization: Bearer {token}으로 api 보내보기
+    //TODO: subscribe되는지 확인
+    //TODO: https://www.inflearn.com/questions/21801/where-parameter-quot-user-id-quot-has-invalid-quot-undefined-quot-value-%EC%98%A4%EB%A5%98%EA%B0%80
+    //TODO: postman이 뭔가 다르게 보내고 있다 인코딩해서 문제인듯
+
     await graphQLClient(user.idToken).request(CREATE_USER, {
       input: {
         objectId: uid,
