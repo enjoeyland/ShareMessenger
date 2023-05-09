@@ -1,6 +1,7 @@
 {
     "conventionalCommits.scopes": [
         "announcement_schema",
-        "subscribe"
+        "subscribe",
+        "announce"
     ]
 }

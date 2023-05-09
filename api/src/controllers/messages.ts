@@ -464,3 +464,107 @@ export const deleteMessage = async (
     return next(err);
   }
 };
+
+export const announce = async (
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    const { uid } = res.locals;
+
+    const { getMessage: message } = await graphQLClient(
+      res.locals.token
+    ).request(GET_MESSAGE, {
+      objectId: id,
+    });
+
+    if (message.chatType !== "Channel") {
+      throw new Error("Direct messages cannot be announced.");
+    }
+
+    let chat;
+    const { getChannel: channel } = await graphQLClient(
+      res.locals.token
+    ).request(GET_CHANNEL, {
+      objectId: message.chatId,
+    });
+    chat = channel;
+    
+    if (!chat.members.includes(uid)) {
+      throw new Error("The user is not authorized to announce this message.");
+    }
+
+    const subscriberList: any[] = [];
+    await Promise.all(
+      channel.announcementSubscribers.map(async (channelId: String) => {
+        const { getChannel: _channel } = await graphQLClient(
+          res.locals.token
+        ).request(GET_CHANNEL, {
+          objectId: channelId,
+        });
+        subscriberList.push(_channel);
+      })
+    );
+    
+    const promises: any[]  = []
+    subscriberList.forEach(async _channel => {
+      promises.push(
+        await graphQLClient(res.locals.token).request(CREATE_MESSAGE, {
+          input: {
+            ...message,
+            objectId: uuidv4(),
+            senderId: uid,
+            chatId: _channel.objectId,
+            chatType: "Channel",
+            counter: _channel.lastMessageCounter + 1,
+            isDeleted: false,
+            isEdited: false,
+            isAnnouncement: true,
+            announcementChannelId: message.chatId,
+          },
+        })
+      );
+      
+      const lastMessageText = lastMessageTextGenerator({...message});
+      promises.push(
+        graphQLClient(res.locals.token).request(UPDATE_CHANNEL, {
+          input: {
+            objectId: _channel.objectId,
+            lastMessageText: lastMessageText,
+            lastMessageCounter: _channel.lastMessageCounter + 1,
+            typing: arrayRemove(_channel.typing, uid),
+          },
+        })
+      );
+
+      const detailId = sha256(`${uid}#${_channel.objectId}`);
+      const { getDetail: chatDetails } = await graphQLClient(
+        res.locals.token
+      ).request(GET_DETAIL, {
+        objectId: detailId,
+      });
+  
+      if (chatDetails) {
+        promises.push(
+          graphQLClient(res.locals.token).request(UPDATE_DETAIL, {
+            input: {
+              objectId: detailId,
+              lastRead: _channel.lastMessageCounter + 1,
+            },
+          })
+        );
+      }
+    });
+
+    await Promise.all(promises);
+
+    res.locals.data = {
+      success: true,
+    };
+    return next();
+  } catch (err) {
+    return next(err);
+  }
+};

@@ -85,6 +85,7 @@ messagesRouter.post("/", messages.createMessage);
 messagesRouter.post("/:id", messages.editMessage);
 messagesRouter.delete("/:id", messages.deleteMessage);
 messagesRouter.post("/:id/reactions", messages.editMessageReaction);
+messagesRouter.post("/:id/announce", messages.announce);
 
 const usersRouter = express.Router();
 usersRouter.post("/", users.createUser);
