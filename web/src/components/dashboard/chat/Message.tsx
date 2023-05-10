@@ -401,7 +401,11 @@ export default function Message({
               onClick={announceMessage}
             >
               <span className="sr-only">Announce</span>
-              <SpeakerphoneIcon className="h-4 w-4" />
+              {loadingAnnounce ? (
+                <Spinner className="h-4 w-4 th-color-for" />
+              ) : (
+                <SpeakerphoneIcon className="h-4 w-4" />
+              )}
             </button>
           )}
 
@@ -440,6 +444,7 @@ export default function Message({
       value?.objectId,
       value?.displayName,
       edit,
+      loadingAnnounce,
       loadingDelete,
       imageLoaded,
       displayProfilePicture,
