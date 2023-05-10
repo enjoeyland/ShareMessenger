@@ -510,10 +510,13 @@ export const announce = async (
     
     const promises: any[]  = []
     subscriberList.forEach(async _channel => {
+      const messageForCreate = {...message}
+      delete messageForCreate["createdAt"]
+      delete messageForCreate["updatedAt"]
       promises.push(
         await graphQLClient(res.locals.token).request(CREATE_MESSAGE, {
           input: {
-            ...message,
+            ...messageForCreate,
             objectId: uuidv4(),
             senderId: uid,
             chatId: _channel.objectId,
