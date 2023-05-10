@@ -9,9 +9,9 @@ services:
     volumes:
       - config_files:/app/config
 
-  relatedchat_web:
-    image: relatedcode/relatedchat-web:latest
-    container_name: relatedchat_web
+  sharemessenger_web:
+    image: khmin1104/sharemessenger-web:latest
+    container_name: sharemessenger_web
     ports:
       - "80:80"
     depends_on:
