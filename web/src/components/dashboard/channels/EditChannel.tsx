@@ -3,6 +3,8 @@ import { ArchiveIcon, TrashIcon, XIcon } from "@heroicons/react/outline";
 import ConfirmationModal from "components/ConfirmationModal";
 import EditChannelItems from "components/dashboard/channels/EditChannelItems";
 import MembersSection from "components/dashboard/channels/MembersSection";
+import PublishersSection from "components/dashboard/channels/PublishersSection";
+import SubscribersSection from "components/dashboard/channels/SubscribersSection";
 import { useTheme } from "contexts/ThemeContext";
 import { useUser } from "contexts/UserContext";
 import { useWorkspaceById } from "hooks/useWorkspaces";
@@ -196,6 +198,42 @@ export default function EditChannel({
                     )}
                   </RadioGroup.Option>
                   <RadioGroup.Option
+                    value="publishers"
+                    className="focus:outline-none"
+                  >
+                    {({ checked }) => (
+                      <div
+                        className={classNames(
+                          checked ? "border-b-2" : "",
+                          "pb-2 cursor-pointer"
+                        )}
+                        style={{
+                          borderColor: checked ? themeColors?.brightBlue : "",
+                        }}
+                      >
+                        <span>Publishers</span>
+                      </div>
+                    )}
+                  </RadioGroup.Option>
+                  <RadioGroup.Option
+                    value="subscribers"
+                    className="focus:outline-none"
+                  >
+                    {({ checked }) => (
+                      <div
+                        className={classNames(
+                          checked ? "border-b-2" : "",
+                          "pb-2 cursor-pointer"
+                        )}
+                        style={{
+                          borderColor: checked ? themeColors?.brightBlue : "",
+                        }}
+                      >
+                        <span>Subscribers</span>
+                      </div>
+                    )}
+                  </RadioGroup.Option>
+                  <RadioGroup.Option
                     value="settings"
                     className="focus:outline-none"
                   >
@@ -216,7 +254,7 @@ export default function EditChannel({
                 </RadioGroup>
                 <div
                   className={classNames(
-                    section === "members" ? "" : "px-8",
+                    section === "members"||"publishers"||"subscribers" ? "" : "px-8",
                     "space-y-6 pt-5 pb-8 border-t h-550 th-bg-bg th-border-selbg"
                   )}
                 >
@@ -255,6 +293,8 @@ export default function EditChannel({
                     </>
                   )}
                   {section === "members" && <MembersSection />}
+                  {section === "publishers" && <PublishersSection />}
+                  {section === "subscribers" && <SubscribersSection />}
                   {section === "settings" && (
                     <>
                       <div
