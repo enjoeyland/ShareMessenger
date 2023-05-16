@@ -5,7 +5,7 @@ import {
   SearchIcon,
 } from "@heroicons/react/outline";
 import Spinner from "components/Spinner";
-// import SelectChannelModal from "components/dashboard/channels/SelectChannelModal";
+import SelectChannelModal from "components/dashboard/channels/SelectChannelModal";
 import { ChannelsContext } from "contexts/ChannelsContext";
 import { useModal } from "contexts/ModalContext";
 import { useChannelById } from "hooks/useChannels";
@@ -13,7 +13,7 @@ import { useWorkspaceById } from "hooks/useWorkspaces";
 import { useContext, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { useParams } from "react-router-dom";
-import { deleteData } from "utils/api-helpers";
+import { postData, deleteData } from "utils/api-helpers";
 
 
 function ChannelItem({ channel }: { channel: any }) {
@@ -31,6 +31,8 @@ function ChannelItem({ channel }: { channel: any }) {
     }
     setLoading(false);
   };
+
+  const isCurrent = channelId === channel.objectId;
   return (
     <li className="px-8 py-2 flex justify-between items-center cursor-pointer group">
       <div className="flex items-center group-hover:w-4/6 w-full">
@@ -42,6 +44,11 @@ function ChannelItem({ channel }: { channel: any }) {
         </div>
         <span className="font-bold th-color-for truncate">
           {channel?.name.replace("#", "")}
+          {isCurrent && (
+            <span className="font-normal opacity-70 ml-1 th-color-for">
+              (current)
+            </span>
+          )}
           {channel?.isArchived && (
             <span className="text-sm opacity-70"> (archived)</span>
           )}
@@ -126,14 +133,27 @@ export default function PublishersSection() {
             <div className="rounded p-2 mr-4">
               <PlusCircleIcon className="h-6 w-6 th-color-for" />
             </div>
-            <span className="font-bold th-color-for">Create channel</span>
+            <span className="font-bold th-color-for">subscribe channel</span>
           </li>
           {displayChannels?.map((channel: any) => (
             <ChannelItem channel={channel} key={channel?.objectId} />
           ))}
         </ul>
       )}
-      {/* <SelectChannelModal purpose="subscribe" /> */}
+      <SelectChannelModal 
+        filter={(ch: any) => (
+          !channel?.announcementPublishers.includes(ch.objectId)
+        )}
+        onClick={
+          async (channel: any) => {
+            try {
+              await postData(`/channels/${channelId}/subscribe/${channel.objectId}`);
+              toast.success("subscribed channel"); 
+            } catch (err: any) {
+              toast.error(err.message);
+            }
+          }}
+      />
     </>
   );
 }
