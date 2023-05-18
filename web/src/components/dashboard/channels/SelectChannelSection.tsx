@@ -6,9 +6,7 @@ import Spinner from "components/Spinner";
 import { ChannelsContext } from "contexts/ChannelsContext";
 import { useWorkspaceById } from "hooks/useWorkspaces";
 import { useContext, useMemo, useState } from "react";
-import toast from "react-hot-toast";
 import { useParams } from "react-router-dom";
-import { postData } from "utils/api-helpers";
 import styled from "styled-components";
 import { useTheme } from "contexts/ThemeContext";
 
@@ -19,7 +17,7 @@ const ChannelItemDiv = styled.div`
 `;
 
 function ChannelItem({ onClick, channel }: 
-  { onClick: any, channel: any }) {
+  { onClick: any; channel: any; }) {
   const { channelId, workspaceId } = useParams();
   const { value: workspace } = useWorkspaceById(workspaceId);
   const { themeColors } = useTheme();
@@ -32,26 +30,26 @@ function ChannelItem({ onClick, channel }:
         onClick={onClick}
         theme={themeColors}
       >
-      <div
-        className="rounded p-2 mr-4"
-        style={{ backgroundColor: "#f4ede4" }}
-      >
-        <HashtagIcon className="h-6 w-6" style={{ color: "#4a154b" }} />
-      </div>
-      <span className="font-bold th-color-for truncate">
-        {channel?.name.replace("#", "")}
-        {isCurrent && (
-          <span className="font-normal opacity-70 ml-1 th-color-for">
-            (current)
-          </span>
-        )}
-        {channel?.isArchived && (
-          <span className="text-sm opacity-70"> (archived)</span>
-        )}
-        {workspace?.channelId === channel?.objectId && (
-          <span className="text-sm opacity-70"> (default)</span>
-        )}
-      </span>
+        <div
+          className="rounded p-2 mr-4"
+          style={{ backgroundColor: "#f4ede4" }}
+        >
+          <HashtagIcon className="h-6 w-6" style={{ color: "#4a154b" }} />
+        </div>
+        <span className="font-bold th-color-for truncate">
+          {channel?.name.replace("#", "")}
+          {isCurrent && (
+            <span className="font-normal opacity-70 ml-1 th-color-for">
+              (current)
+            </span>
+          )}
+          {channel?.isArchived && (
+            <span className="text-sm opacity-70"> (archived)</span>
+          )}
+          {workspace?.channelId === channel?.objectId && (
+            <span className="text-sm opacity-70"> (default)</span>
+          )}
+        </span>
       </ChannelItemDiv>
     </li>
   );

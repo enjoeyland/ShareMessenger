@@ -10,8 +10,8 @@ export default function SelectChannelModal({
   filter,
   onClick
 }: {
-  filter: any,
-  onClick: any
+  filter: any;
+  onClick: any;
 }) {
   const { themeColors } = useTheme();
   const cancelButtonRef = useRef(null);
