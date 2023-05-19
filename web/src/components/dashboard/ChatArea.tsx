@@ -8,7 +8,7 @@ import EditChannel from "components/dashboard/channels/EditChannel";
 import Editor from "components/dashboard/chat/Editor";
 import Messages from "components/dashboard/chat/Messages";
 import { useTheme } from "contexts/ThemeContext";
-import { useUser } from "contexts/UserContext";
+import { UserContext, useUser } from "contexts/UserContext";
 import { useChannelById } from "hooks/useChannels";
 import { useDetailByChat } from "hooks/useDetails";
 import { useDirectMessageById } from "hooks/useDirects";
@@ -24,6 +24,7 @@ import { useMessagesByChat } from "hooks/useMessages";
 import { useWorkspaceById } from "hooks/useWorkspaces";
 import { ChannelsContext } from "contexts/ChannelsContext";
 import classNames from "utils/classNames";
+import { FilterContext } from "contexts/FilterContext";
 
 const SelectButton = styled.button`
   :hover {
@@ -36,10 +37,11 @@ const FilterItemDiv = styled.div`
   }
 `;
 
-function FilterItem({channel, setFilter}:{channel:any;setFilter:any}) {
+function FilterItem({channel}:{channel:any}) {
   const { channelId, workspaceId } = useParams();
   const { value: workspace } = useWorkspaceById(workspaceId);
   const { themeColors } = useTheme();
+  const { setFilter } = useContext(FilterContext);
 
   const isCurrent = channelId === channel.objectId;
 
@@ -76,7 +78,7 @@ function FilterItem({channel, setFilter}:{channel:any;setFilter:any}) {
   );
 }
 
-function MessageFilterSelectMenu({open, setFilter}:{open:boolean; setFilter:any}) {
+function MessageFilterSelectMenu({open}:{open:boolean}) {
   const { channelId } = useParams();
   const { value: channel } = useChannelById(channelId);
   const { themeColors } = useTheme();
@@ -85,6 +87,7 @@ function MessageFilterSelectMenu({open, setFilter}:{open:boolean; setFilter:any}
   const [search, setSearch] = useState("");
   
   const { value: channels, loading } = useContext(ChannelsContext);
+  const { setFilter } = useContext(FilterContext);
 
   const displayChannels = useMemo(
     () =>
@@ -188,7 +191,7 @@ function MessageFilterSelectMenu({open, setFilter}:{open:boolean; setFilter:any}
               </FilterItemDiv>
             </div>
             {displayChannels?.map((channel: any) => (
-              <FilterItem channel={channel} setFilter={setFilter} key={channel?.objectId}/>
+              <FilterItem channel={channel} key={channel?.objectId}/>
             ))}
           </div>
         }
@@ -203,8 +206,7 @@ function HeaderChannel() {
   const [openEditChannel, setOpenEditChannel] = useState(false);
   const { channelId } = useParams();
   const { value } = useChannelById(channelId);
-
-  const [filteredBy, setFilter] = useState<any>(null);
+  const { filteredBy } = useContext(FilterContext);
 
   return (
     <div className="w-full border-b flex justify-between items-center px-5 py-1 h-14 th-color-selbg th-border-selbg">
@@ -241,15 +243,15 @@ function HeaderChannel() {
                   as="div"
                   className="relative mr-2 cursor-pointer appearance-none"
                 >
-                  {filteredBy!==null &&
+                  {filteredBy===null &&
                     <FilterOutlineIcon className="h-6 w-6 th-color-for"/>
                   }
-                  {filteredBy===null &&
-                    <FilterSolidIcon className="h-6 w-6 th-color-green"/>
+                  {filteredBy!==null &&
+                    <FilterSolidIcon className="h-6 w-6 th-color-for"/>
                   }
                 </Menu.Button>
               </div>
-              <MessageFilterSelectMenu open={open} setFilter={setFilter}/>
+              <MessageFilterSelectMenu open={open}/>
             </>
           )}
         </Menu>
