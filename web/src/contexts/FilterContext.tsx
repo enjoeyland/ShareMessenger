@@ -1,4 +1,4 @@
-import { Dispatch, createContext, useState } from "react";
+import { createContext, useState } from "react";
 
 export const FilterContext = createContext({
   filteredBy: null as any,
