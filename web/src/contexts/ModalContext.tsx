@@ -7,6 +7,9 @@ export const ModalContext = createContext({
   openCreateChannel: false,
   setOpenCreateChannel: null as any,
 
+  openSelectChannel: false,
+  setOpenSelectChannel: null as any,
+
   openEditPassword: false,
   setOpenEditPassword: null as any,
 
@@ -30,6 +33,7 @@ export const ModalContext = createContext({
 export function ModalProvider({ children }: { children: React.ReactNode }) {
   const [openCreateWorkspace, setOpenCreateWorkspace] = useState(false);
   const [openCreateChannel, setOpenCreateChannel] = useState(false);
+  const [openSelectChannel, setOpenSelectChannel] = useState(false);
   const [openEditPassword, setOpenEditPassword] = useState(false);
   const [openInviteTeammates, setOpenInviteTeammates] = useState(false);
   const [openPreferences, setOpenPreferences] = useState(false);
@@ -52,6 +56,9 @@ export function ModalProvider({ children }: { children: React.ReactNode }) {
 
         openCreateChannel,
         setOpenCreateChannel,
+
+        openSelectChannel,
+        setOpenSelectChannel,
 
         openEditPassword,
         setOpenEditPassword,

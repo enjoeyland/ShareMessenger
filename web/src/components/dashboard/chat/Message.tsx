@@ -1,4 +1,4 @@
-import { DocumentTextIcon, DownloadIcon } from "@heroicons/react/outline";
+import { DocumentTextIcon, DownloadIcon, SpeakerphoneIcon } from "@heroicons/react/outline";
 import { PencilIcon, TrashIcon } from "@heroicons/react/solid";
 import EditMessage from "components/dashboard/chat/EditMessage";
 import QuillReader from "components/dashboard/quill/QuillReader";
@@ -13,7 +13,7 @@ import React, { useMemo, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
-import { deleteData } from "utils/api-helpers";
+import { deleteData, postData } from "utils/api-helpers";
 import bytesToSize from "utils/bytesToSize";
 import classNames from "utils/classNames";
 import { getHref } from "utils/get-file-url";
@@ -143,6 +143,8 @@ export default function Message({
 
   const fileURL = getHref(message?.thumbnailURL) || getHref(message?.fileURL);
 
+  const [loadingAnnounce, setLoadingAnnounce] = useState(false);
+  
   const [loadingDelete, setLoadingDelete] = useState(false);
 
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -164,6 +166,16 @@ export default function Message({
       width: "384px",
     };
   }, [message?.mediaHeight, message?.mediaWidth]);
+
+  const announceMessage = async () => {
+    setLoadingAnnounce(true);
+    try {
+      await postData(`/messages/${message?.objectId}/announce`);
+    } catch (err: any) {
+      toast.error(err.message);
+    }
+    setLoadingAnnounce(false);
+  };
 
   const deleteMessage = async () => {
     setLoadingDelete(true);
@@ -382,6 +394,21 @@ export default function Message({
             </button>
           )}
 
+          {!message?.sticker && (
+            <button
+              type="button"
+              className="th-bg-bg th-border-selbg th-color-for relative inline-flex items-center px-3 py-1 border text-sm font-medium focus:z-10 focus:outline-none"
+              onClick={announceMessage}
+            >
+              <span className="sr-only">Announce</span>
+              {loadingAnnounce ? (
+                <Spinner className="h-4 w-4 th-color-for" />
+              ) : (
+                <SpeakerphoneIcon className="h-4 w-4" />
+              )}
+            </button>
+          )}
+
           {message?.text && message?.senderId === user?.uid && (
             <button
               type="button"
@@ -417,6 +444,7 @@ export default function Message({
       value?.objectId,
       value?.displayName,
       edit,
+      loadingAnnounce,
       loadingDelete,
       imageLoaded,
       displayProfilePicture,
@@ -429,6 +457,7 @@ export default function Message({
       {children}
 
       <MessageDiv
+        // TODO: 여기서부터
         theme={themeColors}
         className={classNames(
           edit ? "py-2" : "py-1",

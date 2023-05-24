@@ -53,6 +53,8 @@ export const createWorkspace = async (
         details: "",
         lastMessageCounter: 0,
         lastMessageText: "",
+        announcementSubscribers: [],
+        announcementPublishers: [],
       },
     });
 

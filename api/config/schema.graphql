@@ -14,6 +14,8 @@ type Channel {
   workspaceId: String
   createdAt: Date
   updatedAt: Date
+  announcementSubscribers: [String] # only channel
+  announcementPublishers: [String] # only channel
 }
 
 type Detail {
@@ -61,6 +63,8 @@ type Message {
   workspaceId: String
   createdAt: Date
   updatedAt: Date
+  isAnnouncement: Boolean
+  announcementChannelId: String
 }
 
 type Presence {
@@ -141,7 +145,14 @@ type Query {
   listChannels(updatedAt: Date, workspaceId: String, userId: String, name: String): [Channel]
   listDetails(updatedAt: Date, workspaceId: String, userId: String): [Detail]
   listDirects(updatedAt: Date, workspaceId: String, userId: String): [Direct]
-  listMessages(updatedAt: Date, chatId: String, limit: Int, nextToken: String): [Message]
+  listMessages(
+    updatedAt: Date
+    chatId: String
+    isAnnouncement: Boolean
+    announcementChannelId: String
+    limit: Int
+    nextToken: String
+  ): [Message]
   listPresences(updatedAt: Date): [Presence]
   listUsers(updatedAt: Date, workspaceId: String): [User]
   listWorkspaces(updatedAt: Date): [Workspace]
@@ -174,6 +185,8 @@ input CreateChannelInput {
   typing: [String]
   workspaceId: String
   createdAt: Date
+  announcementSubscribers: [String]
+  announcementPublishers: [String]
 }
 
 input CreateDetailInput {
@@ -218,6 +231,8 @@ input CreateMessageInput {
   thumbnailURL: String
   workspaceId: String
   createdAt: Date
+  isAnnouncement: Boolean
+  announcementChannelId: String
 }
 
 input CreatePresenceInput {
@@ -277,6 +292,8 @@ input UpdateChannelInput {
   topic: String
   typing: [String]
   workspaceId: String
+  announcementSubscribers: [String]
+  announcementPublishers: [String]
 }
 
 input UpdateDetailInput {
@@ -318,6 +335,8 @@ input UpdateMessageInput {
   type: String
   thumbnailURL: String
   workspaceId: String
+  isAnnouncement: Boolean
+  announcementChannelId: String
 }
 
 input UpdatePresenceInput {

@@ -321,12 +321,24 @@ module.exports.createMessageResolver = function (
               [Operation.gt]: args.updatedAt,
             },
           };
-        }
-        if (args.chatId) {
+        } else if (args.chatId) {
           filter = {
             chatId: args.chatId,
             isDeleted: false,
           };
+        } else if (args.chatId && !args.isAnnouncement) {
+          filter = {
+            chatId: args.chatId,
+            isDeleted: false,
+            isAnnouncement: args.isAnnouncement,
+          }
+        } else if (args.chatId && args.isAnnouncement &&  args.announcementChannelId) {
+          filter = {
+            chatId: args.chatId,
+            isDeleted: false,
+            isAnnouncement: args.isAnnouncement,
+            announcementChannelId: args.announcementChannelId,
+          }
         }
         return await database.models[MODEL_NAME_MESSAGE].findAll({
           where: {

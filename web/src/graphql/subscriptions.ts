@@ -17,6 +17,8 @@ export const CHANNEL = gql`
       workspaceId
       createdAt
       updatedAt
+      announcementSubscribers
+      announcementPublishers
     }
   }
 `;
@@ -124,6 +126,8 @@ export const MESSAGE = gql`
       workspaceId
       createdAt
       updatedAt
+      isAnnouncement
+      announcementChannelId
     }
   }
 `;
