@@ -83,7 +83,7 @@ export default function Reader({
         readOnly
         ref={editorRef}
         className={classNames(
-          /[!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~A-Za-z0-9]/g.test(
+          /[!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~A-Za-z0-9ㄱ-ㅎ가-힣]/g.test(
             onlyText?.replace(" (edited)", "")
           )
             ? ""
