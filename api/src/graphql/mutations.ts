@@ -134,6 +134,8 @@ export const CREATE_MESSAGE = gql`
       updatedAt
       isAnnouncement
       announcementChannelId
+      reportId
+      reports
     }
   }
 `;
@@ -164,6 +166,8 @@ export const UPDATE_MESSAGE = gql`
       updatedAt
       isAnnouncement
       announcementChannelId
+      reportId
+      reports
     }
   }
 `;

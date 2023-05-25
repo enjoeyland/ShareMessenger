@@ -80,6 +80,8 @@ export const LIST_MESSAGES = gql`
       updatedAt
       isAnnouncement
       announcementChannelId
+      reportId
+      reports
     }
   }
 `;
