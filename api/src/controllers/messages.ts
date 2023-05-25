@@ -19,7 +19,7 @@ import {
   LIST_MESSAGES
 } from "graphql/queries";
 import { getMessageType, lastMessageTextGenerator, sha256 } from "utils";
-import { arrayRemove } from "utils/array-helpers";
+import { arrayRemove, arrayUnion } from "utils/array-helpers";
 import graphQLClient from "utils/graphql";
 import { getFileMetadata, saveImageThumbnail } from "utils/storage";
 import { v4 as uuidv4 } from "uuid";
@@ -39,6 +39,8 @@ export const createMessage = async (
       sticker,
       fileName,
       objectId: customObjectId,
+      isReportBox,
+      reportId,
     } = req.body;
     const { uid } = res.locals;
 
@@ -92,6 +94,19 @@ export const createMessage = async (
       authToken: res.locals.token,
     })) as any;
 
+    let reportBox:any = null;
+    if (reportId) {
+      const { getMessage: reportBox } = await graphQLClient(
+        res.locals.token
+      ).request(GET_MESSAGE, {
+        objectId: reportId,
+      });
+
+      if (reportBox.chatId !== chatId) {
+        throw new Error("A Message cannot be report to other chat.");
+      }
+    }
+
     const promises = [];
 
     const messageId = customObjectId || uuidv4();
@@ -119,12 +134,15 @@ export const createMessage = async (
             text,
             sticker,
             fileType: fileDetails?.ContentType,
+            isReportBox,
           }),
           counter: lastMessageCounter + 1,
           isDeleted: false,
           isEdited: false,
           isAnnouncement: false,
           announcementChannelId: null,
+          reportId: isReportBox ? messageId : reportId || null, 
+          reports: [],
         },
       })
     );
@@ -178,6 +196,17 @@ export const createMessage = async (
             userId: uid,
             workspaceId,
             lastRead: lastMessageCounter + 1,
+          },
+        })
+      );
+    }
+
+    if (reportBox) {
+      promises.push(
+        await graphQLClient(res.locals.token).request(UPDATE_MESSAGE, {
+          input: {
+            objectId: reportId,
+            reports: arrayUnion(reportBox.reports, messageId),
           },
         })
       );

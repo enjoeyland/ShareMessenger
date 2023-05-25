@@ -3,6 +3,7 @@
         "announcement_schema",
         "subscribe",
         "announce",
-        "filter"
+        "filter",
+        "report"
     ]
 }

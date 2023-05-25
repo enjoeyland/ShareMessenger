@@ -119,11 +119,14 @@ export const getMessageType = ({
   text,
   sticker,
   fileType,
+  isReportBox,
 }: {
   text?: string;
   sticker?: string;
   fileType?: string;
+  isReportBox?: boolean;
 }) => {
+  if (isReportBox) return "reportbox"
   if (text) return "text";
   if (sticker) return "sticker";
   if (fileType === "image/gif") return "anim";
