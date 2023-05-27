@@ -41,7 +41,7 @@ function FilterItem({channel}:{channel:any}) {
   const { channelId, workspaceId } = useParams();
   const { value: workspace } = useWorkspaceById(workspaceId);
   const { themeColors } = useTheme();
-  const { setFilter } = useContext(FilterContext);
+  const { setFilterType, setFilter } = useContext(FilterContext);
 
   const isCurrent = channelId === channel.objectId;
 
@@ -49,7 +49,7 @@ function FilterItem({channel}:{channel:any}) {
       <div className="px-8 py-2 flex justify-between items-center cursor-pointer group">
         <FilterItemDiv
           className="flex items-center group-hover:w-4/6 w-full"
-          onClick={()=>setFilter(channel)}
+          onClick={()=>{setFilterType("channel_announcement"); setFilter(channel);}}
           theme={themeColors}
         >
           <div
@@ -87,7 +87,7 @@ function MessageFilterSelectMenu({open}:{open:boolean}) {
   const [search, setSearch] = useState("");
   
   const { value: channels, loading } = useContext(ChannelsContext);
-  const { setFilter } = useContext(FilterContext);
+  const { setFilterType, setFilter } = useContext(FilterContext);
 
   const displayChannels = useMemo(
     () =>
@@ -164,7 +164,7 @@ function MessageFilterSelectMenu({open}:{open:boolean}) {
           <div className="px-8 py-2 flex justify-between items-center cursor-pointer group">
             <FilterItemDiv
               className="flex items-center group-hover:w-4/6 w-full"
-              onClick={()=>setFilter(null)}
+              onClick={()=>{setFilterType(null); setFilter(null);}}
               theme={themeColors}
             >
               <span className="font-bold th-color-for truncate">
@@ -182,7 +182,7 @@ function MessageFilterSelectMenu({open}:{open:boolean}) {
             <div className="px-8 py-2 flex justify-between items-center cursor-pointer group">
               <FilterItemDiv
                 className="flex items-center group-hover:w-4/6 w-full"
-                onClick={()=>setFilter("")}
+                onClick={()=>{setFilterType("channel_announcement"); setFilter("");}}
                 theme={themeColors}
               >
                 <span className="font-bold th-color-for truncate">
