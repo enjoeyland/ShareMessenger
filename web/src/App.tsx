@@ -20,6 +20,7 @@ import { ThemeProvider } from "contexts/ThemeContext";
 import { UserProvider } from "contexts/UserContext";
 import { UsersProvider } from "contexts/UsersContext";
 import { FilterProvider } from "contexts/FilterContext";
+import { RegisterMessageProvider } from "contexts/RegisterMessageContext";
 import { getIdToken } from "gqlite-lib/dist/client/auth";
 import { setUrl } from "gqlite-lib/dist/client/utils";
 import { createClient } from "graphql-ws";
@@ -123,8 +124,10 @@ function App() {
                         <DetailsProvider>
                           <ReactionsProvider>
                             <FilterProvider>
-                              <Toaster position="top-center" />
-                              <WideScreen>{content}</WideScreen>
+                              <RegisterMessageProvider>
+                                <Toaster position="top-center" />
+                                <WideScreen>{content}</WideScreen>
+                              </RegisterMessageProvider>
                             </FilterProvider>
                           </ReactionsProvider>
                         </DetailsProvider>

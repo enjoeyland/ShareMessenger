@@ -164,6 +164,8 @@ export default function Editor() {
                   filePath,
                 }),
                 chatType: channelId ? "Channel" : "Direct",
+                isReportBox: false,
+                reportId: null,
               });
               const el = document.getElementById("messages")!;
               el.scrollTo(el.scrollHeight, 0);

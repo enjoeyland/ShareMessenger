@@ -9,7 +9,7 @@ import { useTheme } from "contexts/ThemeContext";
 import { useUser } from "contexts/UserContext";
 import { useUserById } from "hooks/useUsers";
 import { reactions } from "lib/reactions";
-import React, { useMemo, useRef, useState } from "react";
+import React, { useContext, useMemo, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
@@ -18,6 +18,9 @@ import bytesToSize from "utils/bytesToSize";
 import classNames from "utils/classNames";
 import { getHref } from "utils/get-file-url";
 import hexToRgbA from "utils/hexToRgbA";
+import ModalButton from "../ModalButton";
+import { RegisterMessageContext } from "contexts/RegisterMessageContext";
+import { FilterContext } from "contexts/FilterContext";
 
 const MessageDiv = styled.div`
   :hover {
@@ -202,6 +205,9 @@ export default function Message({
     [previousSameSender, index, prevCreatedAt, createdAt]
   );
 
+  const {setReportBox} = useContext(RegisterMessageContext)
+  const {setFilterType, setFilter} = useContext(FilterContext)
+
   const messageRender = useMemo(
     () => (
       <div className="flex flex-1 group">
@@ -359,6 +365,13 @@ export default function Message({
               alt={message?.sticker}
               src={`${process.env.PUBLIC_URL}/stickers/${message?.sticker}`}
             />
+          )}
+
+          {message?.objectId === message?.reportId && !edit && (
+            <div className="py-1 flex">
+                <ModalButton text="Register Message" onClick={()=>setReportBox(message)} />
+                <ModalButton text="Filter" onClick={()=>{setFilterType("message_report"); setFilter(message);}}/>
+            </div>
           )}
         </div>
 
