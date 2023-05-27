@@ -96,11 +96,11 @@ export const createMessage = async (
 
     let reportBox:any = null;
     if (reportId) {
-      const { getMessage: reportBox } = await graphQLClient(
+      ({ getMessage: reportBox } = await graphQLClient(
         res.locals.token
       ).request(GET_MESSAGE, {
         objectId: reportId,
-      });
+      }));
 
       if (reportBox.chatId !== chatId) {
         throw new Error("A Message cannot be report to other chat.");

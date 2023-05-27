@@ -237,7 +237,7 @@ input CreateMessageInput {
   isAnnouncement: Boolean
   announcementChannelId: String
   reportId: String
-  reports: [IdWithDate]
+  reports: [String]
 }
 
 input CreatePresenceInput {
@@ -343,7 +343,7 @@ input UpdateMessageInput {
   isAnnouncement: Boolean
   announcementChannelId: String
   reportId: String
-  reports: [IdWithDate]
+  reports: [String]
 }
 
 input UpdatePresenceInput {

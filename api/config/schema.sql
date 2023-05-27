@@ -69,8 +69,8 @@ create table
         "updatedAt" timestamptz not null default now(),
         "isAnnouncement" boolean not null default false,
         "announcementChannelId" varchar(255),
-        "reportId": varchar(255),
-        "reports": text []
+        "reportId" varchar(255),
+        "reports" text []
     );
 
 create table
