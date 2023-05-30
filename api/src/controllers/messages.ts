@@ -525,6 +525,14 @@ export const announce = async (
       throw new Error("The user is not authorized to announce this message.");
     }
 
+    await graphQLClient(res.locals.token).request(UPDATE_MESSAGE, {
+      input: {
+        objectId: id,
+        isAnnouncement: true,
+        announcementChannelId: id,
+      },
+    });
+
     const subscriberList: any[] = [];
     await Promise.all(
       channel.announcementSubscribers.map(async (channelId: String) => {
