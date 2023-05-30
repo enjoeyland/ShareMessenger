@@ -89,14 +89,14 @@ export default function Messages({ lastRead }: { lastRead: number | null }) {
             )}
         </Message>
       ))}
-      {loading && messages?.length === 0 && (
+      {loading && filteredMessage?.length === 0 && (
         <div className="flex w-full items-center py-10 justify-center">
           <Spinner />
         </div>
       )}
       {!loading &&
-        messages?.length > 0 &&
-        messages?.length === page * MESSAGES_PER_PAGE && (
+        filteredMessage?.length > 0 &&
+        filteredMessage?.length === page * MESSAGES_PER_PAGE && (
           <div ref={ref} className="opacity-0 w-full" />
         )}
     </div>
