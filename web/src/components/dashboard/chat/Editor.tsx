@@ -1,12 +1,15 @@
+import { XIcon } from "@heroicons/react/outline";
 import QuillEditor from "components/dashboard/quill/QuillEditor";
 import { MESSAGE_MAX_CHARACTERS } from "config";
+import { RegisterMessageContext } from "contexts/RegisterMessageContext";
+import { useTheme } from "contexts/ThemeContext";
 import { useUser } from "contexts/UserContext";
 import { Formik } from "formik";
 import { uploadFile } from "gqlite-lib/dist/client/storage";
 import { useChannelById } from "hooks/useChannels";
 import { useDirectMessageById } from "hooks/useDirects";
 import { useUserById } from "hooks/useUsers";
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import toast from "react-hot-toast";
 import { useParams } from "react-router-dom";
@@ -46,6 +49,9 @@ function KeyboardInfos({ hasText }: { hasText: boolean }) {
 }
 
 export default function Editor() {
+  const { themeColors } = useTheme();
+  const {reportBox, setReportBox} = useContext(RegisterMessageContext);
+
   const dropzone = useDropzone({
     // Disable click and keydown behavior
     noClick: true,
@@ -129,7 +135,7 @@ export default function Editor() {
       <div
         className={classNames(
           dropzone.isDragActive ? "th-border-blue" : "th-border-selbg",
-          "w-full border rounded flex items-center th-bg-bg"
+          "w-full border rounded flex flex-col items-center th-bg-bg"
         )}
       >
         <Formik
@@ -165,7 +171,7 @@ export default function Editor() {
                 }),
                 chatType: channelId ? "Channel" : "Direct",
                 isReportBox: false,
-                reportId: null,
+                reportId: reportBox?.objectId || null,
               });
               const el = document.getElementById("messages")!;
               el.scrollTo(el.scrollHeight, 0);
@@ -179,32 +185,53 @@ export default function Editor() {
           }}
         >
           {({ values, setFieldValue, handleSubmit, errors, isSubmitting }) => (
-            <form
-              noValidate
-              onSubmit={handleSubmit}
-              className="w-full h-full flex items-center"
-            >
-              <QuillEditor
-                files={files}
-                setFiles={setFiles}
-                editorRef={editorRef}
-                editor={editor}
-                text={values.text}
-                setFieldValue={setFieldValue}
-                placeholder={
-                  channelId
-                    ? `Send a message to ${`#${channel?.name}`}`
-                    : `Send a message to ${userData?.displayName}`
-                }
-                errors={errors}
-                isSubmitting={isSubmitting}
-                handleSubmit={handleSubmit}
-                setHasText={setHasText}
-                dropzone={dropzone}
-                isTyping={isTyping}
-                setIsTyping={setIsTyping}
-              />
-            </form>
+            <>
+              {reportBox && (
+                <div className="px-4 py-2 flex w-full justify-between items-center th-bg-bryellow">
+                  
+                  {`report message to '${reportBox.text.split('\n', 1)[0]}'`}
+                  <div
+                    role="button"
+                    tabIndex={0}
+                    className="cursor-pointer focus:outline-none"
+                    onClick={() => setReportBox(null)}
+                  >
+                    <XIcon className="h-5 w-5 th-color-for"/>
+                  </div>
+                </div>
+              )}
+
+              <form
+                noValidate
+                onSubmit={handleSubmit}
+                className="w-full h-full flex items-center"
+              >
+                
+                <QuillEditor
+                  files={files}
+                  setFiles={setFiles}
+                  editorRef={editorRef}
+                  editor={editor}
+                  text={values.text}
+                  setFieldValue={setFieldValue}
+                  placeholder={
+                    reportBox
+                      ? "report message"
+                      :
+                      channelId
+                        ? `Send a message to ${`#${channel?.name}`}`
+                        : `Send a message to ${userData?.displayName}`
+                  }
+                  errors={errors}
+                  isSubmitting={isSubmitting}
+                  handleSubmit={handleSubmit}
+                  setHasText={setHasText}
+                  dropzone={dropzone}
+                  isTyping={isTyping}
+                  setIsTyping={setIsTyping}
+                />
+              </form>
+            </>
           )}
         </Formik>
       </div>
