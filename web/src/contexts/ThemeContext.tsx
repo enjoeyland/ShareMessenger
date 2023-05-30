@@ -169,6 +169,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
           .th-bg-green {
             background-color: ${themeColors?.green};
           }
+          .th-bg-bryellow {
+            background-color: ${themeColors?.brightYellow};
+          }
+          .th-bg-brgreen {
+            background-color: ${themeColors?.brightGreen};
+          }
 
           .th-border-bg {
             border-color: ${themeColors?.background};
@@ -212,6 +218,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
           }
           .th-color-brblack {
             color: ${themeColors?.brightBlack};
+          }
+          .th-color-yellow {
+            color: ${themeColors?.yellow};
+          }
+          .th-color-brgreen {
+            color: ${themeColors?.brightGreen};
           }
         `}
       />

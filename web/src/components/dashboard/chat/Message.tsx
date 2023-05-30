@@ -244,7 +244,12 @@ export default function Message({
           </div>
         )}
 
-        <div className="flex flex-col flex-1 pl-3 w-full">
+        <div 
+          className={classNames(
+            message?.isAnnouncement ? "th-bg-brgreen" : "",
+            message?.reportId ? "th-bg-bryellow" : "",
+            "flex flex-col flex-1 pl-3 w-full "
+          )}>
           {displayProfilePicture && (
             <div
               className={classNames(

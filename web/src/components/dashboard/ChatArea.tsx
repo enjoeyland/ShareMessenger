@@ -206,7 +206,7 @@ function HeaderChannel() {
   const [openEditChannel, setOpenEditChannel] = useState(false);
   const { channelId } = useParams();
   const { value } = useChannelById(channelId);
-  const { filteredBy } = useContext(FilterContext);
+  const { filterType, filteredBy } = useContext(FilterContext);
 
   return (
     <div className="w-full border-b flex justify-between items-center px-5 py-1 h-14 th-color-selbg th-border-selbg">
@@ -243,12 +243,34 @@ function HeaderChannel() {
                   as="div"
                   className="relative mr-2 cursor-pointer appearance-none"
                 >
-                  {filteredBy===null &&
-                    <FilterOutlineIcon className="h-6 w-6 th-color-for"/>
-                  }
-                  {filteredBy!==null &&
-                    <FilterSolidIcon className="h-6 w-6 th-color-for"/>
-                  }
+                  <SelectButton
+                    className="flex items-center cursor-pointer focus:outline-none py-1 px-2 rounded"
+                    theme={themeColors}
+                  >
+                    {filteredBy === null &&
+                      <FilterOutlineIcon className="h-6 w-6 th-color-for"/>
+                    }
+                    {filteredBy !== null && (
+                        <>
+                          {filterType === "channel_announcement" && (
+                            <div className="font-bold mr-1 th-color-for">
+                              {`#${filteredBy.name || ""}`}
+                            </div>
+                          )}
+                          {filterType === "message_report" && (
+                            <div className="font-bold mr-1 th-color-for">
+                              {filteredBy.text.split('\n', 1)[0]}
+                            </div>
+                          )}
+                          <FilterSolidIcon className={classNames(
+                            filterType === "channel_announcement" ? "th-color-brgreen" : "",
+                            filterType === "message_report" ? "th-color-yellow" : "",
+                            "h-6 w-6"
+                          )}/>
+                        </>
+                      )
+                    }                    
+                  </SelectButton>
                 </Menu.Button>
               </div>
               <MessageFilterSelectMenu open={open}/>
