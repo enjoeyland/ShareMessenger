@@ -67,11 +67,11 @@ export default function Messages({ lastRead }: { lastRead: number | null }) {
           index={index}
           message={message}
           previousSameSender={
-            index !== messages?.length
-              ? messages[index + 1]?.senderId === message?.senderId
+            index !== filteredMessage?.length
+              ? filteredMessage[index + 1]?.senderId === message?.senderId
               : false
           }
-          previousMessageDate={messages[index + 1]?.createdAt}
+          previousMessageDate={filteredMessage[index + 1]?.createdAt}
           editMessage={editMessage}
           setEditMessage={setEditMessage}
         >
