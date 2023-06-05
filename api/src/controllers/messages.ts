@@ -579,22 +579,36 @@ export const announce = async (
         })
       );
 
-      const detailId = sha256(`${uid}#${_channel.objectId}`);
-      const { getDetail: chatDetails } = await graphQLClient(
-        res.locals.token
-      ).request(GET_DETAIL, {
-        objectId: detailId,
-      });
+      if (_channel.members.includes(uid)) {
+        const detailId = sha256(`${uid}#${_channel.objectId}`);
+        const { getDetail: chatDetails } = await graphQLClient(
+          res.locals.token
+        ).request(GET_DETAIL, {
+          objectId: detailId,
+        });
   
-      if (chatDetails) {
-        promises.push(
-          graphQLClient(res.locals.token).request(UPDATE_DETAIL, {
-            input: {
-              objectId: detailId,
-              lastRead: _channel.lastMessageCounter + 1,
-            },
-          })
-        );
+        if (chatDetails) {
+          promises.push(
+            graphQLClient(res.locals.token).request(UPDATE_DETAIL, {
+              input: {
+                objectId: detailId,
+                lastRead: _channel.lastMessageCounter + 1,
+              },
+            })
+          );
+        } else {
+          promises.push(
+            graphQLClient(res.locals.token).request(CREATE_DETAIL, {
+              input: {
+                objectId: detailId,
+                chatId: _channel.objectId,
+                userId: uid,
+                workspaceId: _channel.workspaceId,
+                lastRead: _channel.lastMessageCounter + 1,
+              },
+            })
+          );
+        }
       }
     });
 
