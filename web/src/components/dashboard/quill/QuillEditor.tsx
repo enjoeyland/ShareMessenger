@@ -5,11 +5,13 @@ import {
   PhotographIcon,
   PlayIcon,
   XIcon,
+  InboxInIcon
 } from "@heroicons/react/outline";
 import { PaperAirplaneIcon } from "@heroicons/react/solid";
 import Spinner from "components/Spinner";
 import Style from "components/Style";
 import { MESSAGE_MAX_CHARACTERS, STICKERS_COUNT } from "config";
+import { useModal } from "contexts/ModalContext";
 import { useTheme } from "contexts/ThemeContext";
 import { Picker } from "emoji-mart";
 import "emoji-mart/css/emoji-mart.css";
@@ -188,6 +190,7 @@ function CustomToolbar({
   setHasText: any;
   openDropzone: any;
 }) {
+  const { setCreateReportbox } = useModal();
   const { themeColors } = useTheme();
   const realText = editor?.getText() as string | null | undefined;
   const isText = realText?.trim();
@@ -221,6 +224,12 @@ function CustomToolbar({
         <button className="ql-link" />
       </div>
       <div className="ml-auto flex items-center space-x-2">
+        <InboxInIcon
+          className="h-5 w-5 cursor-pointer th-color-for"
+          onClick={() => {
+            setCreateReportbox(true);
+          }}
+        />
         <StickersDropdown />
         <EmojiDropdown onEmojiClick={onEmojiClick} editor={editor} />
         <AttachFileIcon

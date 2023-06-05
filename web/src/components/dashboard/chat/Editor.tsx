@@ -17,6 +17,7 @@ import { postData } from "utils/api-helpers";
 import classNames from "utils/classNames";
 import now from "utils/now";
 import { v4 as uuidv4 } from "uuid";
+import CreateReportboxModal from "../quill/CreateReportboxModal";
 
 function TypingUser({ userId }: { userId: string }) {
   const { value } = useUserById(userId);
@@ -251,6 +252,7 @@ export default function Editor() {
         </div>
         <KeyboardInfos hasText={hasText} />
       </div>
+      <CreateReportboxModal />
     </div>
   );
 }
