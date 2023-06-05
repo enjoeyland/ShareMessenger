@@ -529,7 +529,7 @@ export const announce = async (
       input: {
         objectId: id,
         isAnnouncement: true,
-        announcementChannelId: id,
+        announcementChannelId: message.chatId,
       },
     });
 
