@@ -21,6 +21,7 @@ import hexToRgbA from "utils/hexToRgbA";
 import ModalButton from "../ModalButton";
 import { RegisterMessageContext } from "contexts/RegisterMessageContext";
 import { FilterContext } from "contexts/FilterContext";
+import { useChannelById } from "hooks/useChannels";
 
 const MessageDiv = styled.div`
   :hover {
@@ -117,6 +118,7 @@ export default function Message({
   const location = useLocation();
 
   const { value } = useUserById(message?.senderId);
+  const { value: announcementChannel } = useChannelById(message?.announcementChannelId);
 
   const { channelId, dmId } = useParams();
   const chatId = channelId || dmId;
@@ -272,7 +274,12 @@ export default function Message({
                   )
                 }
               >
-                {value?.displayName || "undefined"}
+                {message?.isAnnouncement && 
+                  (`#${announcementChannel?.name}-${value?.displayName}` || "undefined")
+                }
+                {!message?.isAnnouncement && 
+                  (value?.displayName || "undefined")
+                }
               </span>
               <span className="font-light text-xs ml-2 align-bottom">
                 {new Date(message?.createdAt)
