@@ -47,7 +47,7 @@ export function ModalProvider({ children }: { children: React.ReactNode }) {
   const [workspaceSettingsSection, setWorkspaceSettingsSection] = useState<
     "members" | "settings"
   >("members");
-
+  
   return (
     <ModalContext.Provider
       value={{

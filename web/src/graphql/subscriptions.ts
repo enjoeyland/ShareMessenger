@@ -128,6 +128,8 @@ export const MESSAGE = gql`
       updatedAt
       isAnnouncement
       announcementChannelId
+      reportId
+      reports
     }
   }
 `;

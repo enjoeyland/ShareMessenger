@@ -41,6 +41,7 @@ type Direct {
   updatedAt: Date
 }
 
+# TODO: appling interface is important
 type Message {
   objectId: String!
   chatId: String
@@ -65,6 +66,8 @@ type Message {
   updatedAt: Date
   isAnnouncement: Boolean
   announcementChannelId: String
+  reportId: String
+  reports: [String]
 }
 
 type Presence {
@@ -233,6 +236,8 @@ input CreateMessageInput {
   createdAt: Date
   isAnnouncement: Boolean
   announcementChannelId: String
+  reportId: String
+  reports: [String]
 }
 
 input CreatePresenceInput {
@@ -337,6 +342,8 @@ input UpdateMessageInput {
   workspaceId: String
   isAnnouncement: Boolean
   announcementChannelId: String
+  reportId: String
+  reports: [String]
 }
 
 input UpdatePresenceInput {

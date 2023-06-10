@@ -19,7 +19,7 @@ import {
   LIST_MESSAGES
 } from "graphql/queries";
 import { getMessageType, lastMessageTextGenerator, sha256 } from "utils";
-import { arrayRemove } from "utils/array-helpers";
+import { arrayRemove, arrayUnion } from "utils/array-helpers";
 import graphQLClient from "utils/graphql";
 import { getFileMetadata, saveImageThumbnail } from "utils/storage";
 import { v4 as uuidv4 } from "uuid";
@@ -39,6 +39,8 @@ export const createMessage = async (
       sticker,
       fileName,
       objectId: customObjectId,
+      isReportBox,
+      reportId,
     } = req.body;
     const { uid } = res.locals;
 
@@ -92,6 +94,19 @@ export const createMessage = async (
       authToken: res.locals.token,
     })) as any;
 
+    let reportBox:any = null;
+    if (reportId) {
+      ({ getMessage: reportBox } = await graphQLClient(
+        res.locals.token
+      ).request(GET_MESSAGE, {
+        objectId: reportId,
+      }));
+
+      if (reportBox.chatId !== chatId) {
+        throw new Error("A Message cannot be report to other chat.");
+      }
+    }
+
     const promises = [];
 
     const messageId = customObjectId || uuidv4();
@@ -119,12 +134,15 @@ export const createMessage = async (
             text,
             sticker,
             fileType: fileDetails?.ContentType,
+            isReportBox,
           }),
           counter: lastMessageCounter + 1,
           isDeleted: false,
           isEdited: false,
           isAnnouncement: false,
           announcementChannelId: null,
+          reportId: isReportBox ? messageId : reportId || null, 
+          reports: [],
         },
       })
     );
@@ -178,6 +196,17 @@ export const createMessage = async (
             userId: uid,
             workspaceId,
             lastRead: lastMessageCounter + 1,
+          },
+        })
+      );
+    }
+
+    if (reportBox) {
+      promises.push(
+        await graphQLClient(res.locals.token).request(UPDATE_MESSAGE, {
+          input: {
+            objectId: reportId,
+            reports: arrayUnion(reportBox.reports, messageId),
           },
         })
       );
@@ -496,6 +525,14 @@ export const announce = async (
       throw new Error("The user is not authorized to announce this message.");
     }
 
+    await graphQLClient(res.locals.token).request(UPDATE_MESSAGE, {
+      input: {
+        objectId: id,
+        isAnnouncement: true,
+        announcementChannelId: message.chatId,
+      },
+    });
+
     const subscriberList: any[] = [];
     await Promise.all(
       channel.announcementSubscribers.map(async (channelId: String) => {
@@ -542,22 +579,36 @@ export const announce = async (
         })
       );
 
-      const detailId = sha256(`${uid}#${_channel.objectId}`);
-      const { getDetail: chatDetails } = await graphQLClient(
-        res.locals.token
-      ).request(GET_DETAIL, {
-        objectId: detailId,
-      });
+      if (_channel.members.includes(uid)) {
+        const detailId = sha256(`${uid}#${_channel.objectId}`);
+        const { getDetail: chatDetails } = await graphQLClient(
+          res.locals.token
+        ).request(GET_DETAIL, {
+          objectId: detailId,
+        });
   
-      if (chatDetails) {
-        promises.push(
-          graphQLClient(res.locals.token).request(UPDATE_DETAIL, {
-            input: {
-              objectId: detailId,
-              lastRead: _channel.lastMessageCounter + 1,
-            },
-          })
-        );
+        if (chatDetails) {
+          promises.push(
+            graphQLClient(res.locals.token).request(UPDATE_DETAIL, {
+              input: {
+                objectId: detailId,
+                lastRead: _channel.lastMessageCounter + 1,
+              },
+            })
+          );
+        } else {
+          promises.push(
+            graphQLClient(res.locals.token).request(CREATE_DETAIL, {
+              input: {
+                objectId: detailId,
+                chatId: _channel.objectId,
+                userId: uid,
+                workspaceId: _channel.workspaceId,
+                lastRead: _channel.lastMessageCounter + 1,
+              },
+            })
+          );
+        }
       }
     });
 

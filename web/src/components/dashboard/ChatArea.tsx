@@ -41,7 +41,7 @@ function FilterItem({channel}:{channel:any}) {
   const { channelId, workspaceId } = useParams();
   const { value: workspace } = useWorkspaceById(workspaceId);
   const { themeColors } = useTheme();
-  const { setFilter } = useContext(FilterContext);
+  const { setFilterType, setFilter } = useContext(FilterContext);
 
   const isCurrent = channelId === channel.objectId;
 
@@ -49,7 +49,7 @@ function FilterItem({channel}:{channel:any}) {
       <div className="px-8 py-2 flex justify-between items-center cursor-pointer group">
         <FilterItemDiv
           className="flex items-center group-hover:w-4/6 w-full"
-          onClick={()=>setFilter(channel)}
+          onClick={()=>{setFilterType("channel_announcement"); setFilter(channel);}}
           theme={themeColors}
         >
           <div
@@ -87,7 +87,7 @@ function MessageFilterSelectMenu({open}:{open:boolean}) {
   const [search, setSearch] = useState("");
   
   const { value: channels, loading } = useContext(ChannelsContext);
-  const { setFilter } = useContext(FilterContext);
+  const { setFilterType, setFilter } = useContext(FilterContext);
 
   const displayChannels = useMemo(
     () =>
@@ -164,7 +164,7 @@ function MessageFilterSelectMenu({open}:{open:boolean}) {
           <div className="px-8 py-2 flex justify-between items-center cursor-pointer group">
             <FilterItemDiv
               className="flex items-center group-hover:w-4/6 w-full"
-              onClick={()=>setFilter(null)}
+              onClick={()=>{setFilterType(null); setFilter(null);}}
               theme={themeColors}
             >
               <span className="font-bold th-color-for truncate">
@@ -182,7 +182,7 @@ function MessageFilterSelectMenu({open}:{open:boolean}) {
             <div className="px-8 py-2 flex justify-between items-center cursor-pointer group">
               <FilterItemDiv
                 className="flex items-center group-hover:w-4/6 w-full"
-                onClick={()=>setFilter("")}
+                onClick={()=>{setFilterType("channel_announcement"); setFilter("");}}
                 theme={themeColors}
               >
                 <span className="font-bold th-color-for truncate">
@@ -206,7 +206,7 @@ function HeaderChannel() {
   const [openEditChannel, setOpenEditChannel] = useState(false);
   const { channelId } = useParams();
   const { value } = useChannelById(channelId);
-  const { filteredBy } = useContext(FilterContext);
+  const { filterType, filteredBy } = useContext(FilterContext);
 
   return (
     <div className="w-full border-b flex justify-between items-center px-5 py-1 h-14 th-color-selbg th-border-selbg">
@@ -243,12 +243,34 @@ function HeaderChannel() {
                   as="div"
                   className="relative mr-2 cursor-pointer appearance-none"
                 >
-                  {filteredBy===null &&
-                    <FilterOutlineIcon className="h-6 w-6 th-color-for"/>
-                  }
-                  {filteredBy!==null &&
-                    <FilterSolidIcon className="h-6 w-6 th-color-for"/>
-                  }
+                  <SelectButton
+                    className="flex items-center cursor-pointer focus:outline-none py-1 px-2 rounded"
+                    theme={themeColors}
+                  >
+                    {filteredBy === null &&
+                      <FilterOutlineIcon className="h-6 w-6 th-color-for"/>
+                    }
+                    {filteredBy !== null && (
+                        <>
+                          {filterType === "channel_announcement" && (
+                            <div className="font-bold mr-1 th-color-for">
+                              {`#${filteredBy.name || ""}`}
+                            </div>
+                          )}
+                          {filterType === "message_report" && (
+                            <div className="font-bold mr-1 th-color-for">
+                              {filteredBy.text.split('\n', 1)[0]}
+                            </div>
+                          )}
+                          <FilterSolidIcon className={classNames(
+                            filterType === "channel_announcement" ? "th-color-brgreen" : "",
+                            filterType === "message_report" ? "th-color-yellow" : "",
+                            "h-6 w-6"
+                          )}/>
+                        </>
+                      )
+                    }                    
+                  </SelectButton>
                 </Menu.Button>
               </div>
               <MessageFilterSelectMenu open={open}/>

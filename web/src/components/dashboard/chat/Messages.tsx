@@ -12,7 +12,7 @@ import { useParams } from "react-router-dom";
 
 export default function Messages({ lastRead }: { lastRead: number | null }) {
   const { channelId, dmId } = useParams();
-  const { filteredBy } = useContext(FilterContext);
+  const { filterType, filteredBy } = useContext(FilterContext);
 
   const [page, setPage] = useState(1);
   const { value: messages, loading } = useMessagesByChat(
@@ -38,15 +38,19 @@ export default function Messages({ lastRead }: { lastRead: number | null }) {
     setPage(1);
   }, [channelId, dmId]);
 
-  const filtedMessage = useMemo(()=>{
+  const filteredMessage = useMemo(()=>{
     if (filteredBy === null) {
       return messages;
     } else {
       return messages.filter((msg: any) => {
-        if (filteredBy === "") {
+        if (filterType === "channel_announcement" && filteredBy === "") {
           return msg.isAnnouncement === false;
-        } else {
+        } else if (filterType === "channel_announcement") {
           return msg.announcementChannelId === filteredBy.objectId;
+        } else if (filterType === "message_report") {
+          return msg.reportId === filteredBy.objectId;
+        } else {
+          return true;
         }
       })
     }
@@ -57,17 +61,17 @@ export default function Messages({ lastRead }: { lastRead: number | null }) {
       className="w-full flex flex-1 flex-col-reverse overflow-y-auto pt-1"
       id="messages"
     >
-      {filtedMessage?.map((message: any, index: number) => (
+      {filteredMessage?.map((message: any, index: number) => (
         <Message
           key={message?.objectId}
           index={index}
           message={message}
           previousSameSender={
-            index !== messages?.length
-              ? messages[index + 1]?.senderId === message?.senderId
+            index !== filteredMessage?.length
+              ? filteredMessage[index + 1]?.senderId === message?.senderId
               : false
           }
-          previousMessageDate={messages[index + 1]?.createdAt}
+          previousMessageDate={filteredMessage[index + 1]?.createdAt}
           editMessage={editMessage}
           setEditMessage={setEditMessage}
         >
@@ -85,14 +89,14 @@ export default function Messages({ lastRead }: { lastRead: number | null }) {
             )}
         </Message>
       ))}
-      {loading && messages?.length === 0 && (
+      {loading && filteredMessage?.length === 0 && (
         <div className="flex w-full items-center py-10 justify-center">
           <Spinner />
         </div>
       )}
       {!loading &&
-        messages?.length > 0 &&
-        messages?.length === page * MESSAGES_PER_PAGE && (
+        filteredMessage?.length > 0 &&
+        filteredMessage?.length === page * MESSAGES_PER_PAGE && (
           <div ref={ref} className="opacity-0 w-full" />
         )}
     </div>

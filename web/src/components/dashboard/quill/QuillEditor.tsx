@@ -5,6 +5,7 @@ import {
   PhotographIcon,
   PlayIcon,
   XIcon,
+  InboxInIcon
 } from "@heroicons/react/outline";
 import { PaperAirplaneIcon } from "@heroicons/react/solid";
 import Spinner from "components/Spinner";
@@ -24,6 +25,9 @@ import { useParams } from "react-router-dom";
 import { postData } from "utils/api-helpers";
 import classNames from "utils/classNames";
 import hexToRgbA from "utils/hexToRgbA";
+import { useFormikContext } from "formik";
+import type { EditorValues } from "components/dashboard/chat/Editor";
+
 
 function EmojiDropdown({
   onEmojiClick,
@@ -188,6 +192,7 @@ function CustomToolbar({
   setHasText: any;
   openDropzone: any;
 }) {
+  const { values, setFieldValue } = useFormikContext<EditorValues>();
   const { themeColors } = useTheme();
   const realText = editor?.getText() as string | null | undefined;
   const isText = realText?.trim();
@@ -221,6 +226,12 @@ function CustomToolbar({
         <button className="ql-link" />
       </div>
       <div className="ml-auto flex items-center space-x-2">
+        <InboxInIcon
+          className="h-5 w-5 cursor-pointer th-color-for"
+          onClick={() => {
+            setFieldValue("createReportbox", !values.createReportbox);
+          }}
+        />
         <StickersDropdown />
         <EmojiDropdown onEmojiClick={onEmojiClick} editor={editor} />
         <AttachFileIcon
@@ -410,6 +421,7 @@ function Editor({
     isDragActive,
     open: openDropzone,
   } = dropzone;
+  const { values } = useFormikContext<EditorValues>();
   const { themeColors } = useTheme();
 
   const { channelId, dmId } = useParams();
@@ -517,7 +529,9 @@ function Editor({
               opacity: 0.7;
             }
             .ql-snow.ql-toolbar {
-              background-color: ${themeColors?.background};
+              background-color: ${values.createReportbox 
+                ? themeColors?.brightYellow 
+                : themeColors?.background};
               border-color: ${isDragActive
                 ? themeColors?.blue
                 : themeColors?.selectionBackground};
