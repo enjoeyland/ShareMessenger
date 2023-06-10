@@ -11,7 +11,6 @@ import { PaperAirplaneIcon } from "@heroicons/react/solid";
 import Spinner from "components/Spinner";
 import Style from "components/Style";
 import { MESSAGE_MAX_CHARACTERS, STICKERS_COUNT } from "config";
-import { useModal } from "contexts/ModalContext";
 import { useTheme } from "contexts/ThemeContext";
 import { Picker } from "emoji-mart";
 import "emoji-mart/css/emoji-mart.css";
@@ -26,6 +25,7 @@ import { useParams } from "react-router-dom";
 import { postData } from "utils/api-helpers";
 import classNames from "utils/classNames";
 import hexToRgbA from "utils/hexToRgbA";
+
 
 function EmojiDropdown({
   onEmojiClick,
@@ -176,6 +176,8 @@ function StickersDropdown() {
 }
 
 function CustomToolbar({
+  createReportbox,
+  setFieldValue,
   isSubmitting,
   errors,
   isFiles,
@@ -183,6 +185,8 @@ function CustomToolbar({
   setHasText,
   openDropzone,
 }: {
+  createReportbox: boolean;
+  setFieldValue: any;
   isSubmitting: boolean;
   errors: any;
   isFiles: boolean;
@@ -190,7 +194,6 @@ function CustomToolbar({
   setHasText: any;
   openDropzone: any;
 }) {
-  const { setCreateReportbox } = useModal();
   const { themeColors } = useTheme();
   const realText = editor?.getText() as string | null | undefined;
   const isText = realText?.trim();
@@ -227,7 +230,7 @@ function CustomToolbar({
         <InboxInIcon
           className="h-5 w-5 cursor-pointer th-color-for"
           onClick={() => {
-            setCreateReportbox(true);
+            setFieldValue("createReportbox", !createReportbox);
           }}
         />
         <StickersDropdown />
@@ -384,6 +387,7 @@ interface EditorProps {
   placeholder: string;
   setFieldValue: any;
   text: string;
+  createReportbox: boolean;
   handleSubmit: any;
   isSubmitting: boolean;
   errors: any;
@@ -401,6 +405,7 @@ function Editor({
   placeholder,
   setFieldValue,
   text,
+  createReportbox,
   handleSubmit,
   isSubmitting,
   errors,
@@ -526,7 +531,9 @@ function Editor({
               opacity: 0.7;
             }
             .ql-snow.ql-toolbar {
-              background-color: ${themeColors?.background};
+              background-color: ${createReportbox 
+                ? themeColors?.brightYellow 
+                : themeColors?.background};
               border-color: ${isDragActive
                 ? themeColors?.blue
                 : themeColors?.selectionBackground};
@@ -594,6 +601,8 @@ function Editor({
         />
         <FileViewer files={files} setFiles={setFiles} />
         <CustomToolbar
+          createReportbox={createReportbox}
+          setFieldValue={setFieldValue}
           isSubmitting={isSubmitting}
           errors={errors}
           isFiles={!!files?.length}

@@ -28,9 +28,6 @@ export const ModalContext = createContext({
   setOpenWorkspaceSettings: null as any,
   workspaceSettingsSection: "",
   setWorkspaceSettingsSection: null as any,
-
-  openCreateReportbox: false,
-  setCreateReportbox: null as any,
 });
 
 export function ModalProvider({ children }: { children: React.ReactNode }) {
@@ -50,9 +47,7 @@ export function ModalProvider({ children }: { children: React.ReactNode }) {
   const [workspaceSettingsSection, setWorkspaceSettingsSection] = useState<
     "members" | "settings"
   >("members");
-
-  const [openCreateReportbox, setCreateReportbox] = useState(false);
-
+  
   return (
     <ModalContext.Provider
       value={{
@@ -83,9 +78,6 @@ export function ModalProvider({ children }: { children: React.ReactNode }) {
         setOpenWorkspaceSettings,
         workspaceSettingsSection,
         setWorkspaceSettingsSection,
-
-        openCreateReportbox,
-        setCreateReportbox,
       }}
     >
       {children}

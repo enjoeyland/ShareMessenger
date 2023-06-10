@@ -17,7 +17,6 @@ import { postData } from "utils/api-helpers";
 import classNames from "utils/classNames";
 import now from "utils/now";
 import { v4 as uuidv4 } from "uuid";
-import CreateReportboxModal from "../quill/CreateReportboxModal";
 
 function TypingUser({ userId }: { userId: string }) {
   const { value } = useUserById(userId);
@@ -47,6 +46,11 @@ function KeyboardInfos({ hasText }: { hasText: boolean }) {
       </div>
     </div>
   );
+}
+
+export interface EditorValues {
+  text: string,
+  createReportbox: boolean,
 }
 
 export default function Editor() {
@@ -130,6 +134,10 @@ export default function Editor() {
 
     return errors;
   };
+  const initialValues: EditorValues = {
+    text: "",
+    createReportbox: false,
+ };
 
   return (
     <div className="w-full px-5 pb-2 flex-shrink-0">
@@ -140,12 +148,10 @@ export default function Editor() {
         )}
       >
         <Formik
-          initialValues={{
-            text: "",
-          }}
+          initialValues={initialValues}
           validate={validate}
           enableReinitialize
-          onSubmit={async ({ text }, { setSubmitting, resetForm }) => {
+          onSubmit={async ({ text, createReportbox }, { setSubmitting, resetForm }) => {
             setSubmitting(true);
             try {
               const messageId = uuidv4();
@@ -171,7 +177,7 @@ export default function Editor() {
                   filePath,
                 }),
                 chatType: channelId ? "Channel" : "Direct",
-                isReportBox: false,
+                isReportBox: createReportbox,
                 reportId: reportBox?.objectId || null,
               });
               const el = document.getElementById("messages")!;
@@ -214,6 +220,7 @@ export default function Editor() {
                   editorRef={editorRef}
                   editor={editor}
                   text={values.text}
+                  createReportbox={values.createReportbox}
                   setFieldValue={setFieldValue}
                   placeholder={
                     reportBox
@@ -252,7 +259,6 @@ export default function Editor() {
         </div>
         <KeyboardInfos hasText={hasText} />
       </div>
-      <CreateReportboxModal />
     </div>
   );
 }
