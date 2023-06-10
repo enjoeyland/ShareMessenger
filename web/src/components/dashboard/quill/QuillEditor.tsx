@@ -5,7 +5,8 @@ import {
   PhotographIcon,
   PlayIcon,
   XIcon,
-  InboxInIcon
+  InboxInIcon,
+  RefreshIcon
 } from "@heroicons/react/outline";
 import { PaperAirplaneIcon } from "@heroicons/react/solid";
 import Spinner from "components/Spinner";
@@ -27,6 +28,10 @@ import classNames from "utils/classNames";
 import hexToRgbA from "utils/hexToRgbA";
 import { useFormikContext } from "formik";
 import type { EditorValues } from "components/dashboard/chat/Editor";
+import Dropdown from 'react-dropdown';
+import 'react-dropdown/style.css';
+import { DatePicker, TimePicker } from "@mui/x-date-pickers";
+import dayjs from "dayjs";
 
 
 function EmojiDropdown({
@@ -226,6 +231,14 @@ function CustomToolbar({
         <button className="ql-link" />
       </div>
       <div className="ml-auto flex items-center space-x-2">
+        {values.createReportbox && 
+          <RefreshIcon 
+            className="h-5 w-5 cursor-pointer th-color-for"
+            onClick={() => {
+              setFieldValue("isRepeat", !values.isRepeat);
+            }}
+          />
+        }
         <InboxInIcon
           className="h-5 w-5 cursor-pointer th-color-for"
           onClick={() => {
@@ -598,6 +611,20 @@ function Editor({
           ref={editorRef}
         />
         <FileViewer files={files} setFiles={setFiles} />
+        {values.createReportbox && values.isRepeat &&
+          <div className="flex items-center rounded-sm m-1 ml-2 p-2 border-2" style={{borderColor:"#0b1140"}}>
+            <div className="font-bold text-lgmr-1 th-color-for max-w-sm truncate">
+              period: 
+            </div>
+            <Dropdown className="" options={['1 day', '1 weak', '1 month']} onChange={(option)=>{}} value={'1 day'} placeholder="Select an option" />
+            <DatePicker className="ml-2" label="start date" onChange={(date)=>{}}/>
+            <div className="font-bold text-lgmr-1 th-color-for max-w-sm truncate">
+              ~
+            </div>
+            <DatePicker className="ml-2" label="end date" onChange={(date)=>{}}/> 
+            <TimePicker className="ml-4" label="time" onChange={(time)=>{}}/>           
+          </div>
+        }
         <CustomToolbar
           isSubmitting={isSubmitting}
           errors={errors}

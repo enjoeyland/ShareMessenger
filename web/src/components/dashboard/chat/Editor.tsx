@@ -51,6 +51,7 @@ function KeyboardInfos({ hasText }: { hasText: boolean }) {
 export interface EditorValues {
   text: string,
   createReportbox: boolean,
+  isRepeat: boolean,
 }
 
 export default function Editor() {
@@ -139,6 +140,7 @@ export default function Editor() {
   const initialValues: EditorValues = {
     text: "",
     createReportbox: false,
+    isRepeat: false,
  };
 
   return (
