@@ -78,6 +78,8 @@ export default function Editor() {
   const [isTyping, setIsTyping] = useState(false);
 
   useEffect(() => {
+    setReportBox(null);
+
     const type = dmId ? "directs" : "channels";
     const id = dmId || channelId;
     setFiles([]);
@@ -182,6 +184,7 @@ export default function Editor() {
               });
               const el = document.getElementById("messages")!;
               el.scrollTo(el.scrollHeight, 0);
+              setReportBox(null);
               resetForm();
               setIsTyping(false);
               setFiles([]);
@@ -220,7 +223,6 @@ export default function Editor() {
                   editorRef={editorRef}
                   editor={editor}
                   text={values.text}
-                  createReportbox={values.createReportbox}
                   setFieldValue={setFieldValue}
                   placeholder={
                     reportBox

@@ -25,6 +25,8 @@ import { useParams } from "react-router-dom";
 import { postData } from "utils/api-helpers";
 import classNames from "utils/classNames";
 import hexToRgbA from "utils/hexToRgbA";
+import { useFormikContext } from "formik";
+import type { EditorValues } from "components/dashboard/chat/Editor";
 
 
 function EmojiDropdown({
@@ -176,8 +178,6 @@ function StickersDropdown() {
 }
 
 function CustomToolbar({
-  createReportbox,
-  setFieldValue,
   isSubmitting,
   errors,
   isFiles,
@@ -185,8 +185,6 @@ function CustomToolbar({
   setHasText,
   openDropzone,
 }: {
-  createReportbox: boolean;
-  setFieldValue: any;
   isSubmitting: boolean;
   errors: any;
   isFiles: boolean;
@@ -194,6 +192,7 @@ function CustomToolbar({
   setHasText: any;
   openDropzone: any;
 }) {
+  const { values, setFieldValue } = useFormikContext<EditorValues>();
   const { themeColors } = useTheme();
   const realText = editor?.getText() as string | null | undefined;
   const isText = realText?.trim();
@@ -230,7 +229,7 @@ function CustomToolbar({
         <InboxInIcon
           className="h-5 w-5 cursor-pointer th-color-for"
           onClick={() => {
-            setFieldValue("createReportbox", !createReportbox);
+            setFieldValue("createReportbox", !values.createReportbox);
           }}
         />
         <StickersDropdown />
@@ -387,7 +386,6 @@ interface EditorProps {
   placeholder: string;
   setFieldValue: any;
   text: string;
-  createReportbox: boolean;
   handleSubmit: any;
   isSubmitting: boolean;
   errors: any;
@@ -405,7 +403,6 @@ function Editor({
   placeholder,
   setFieldValue,
   text,
-  createReportbox,
   handleSubmit,
   isSubmitting,
   errors,
@@ -424,6 +421,7 @@ function Editor({
     isDragActive,
     open: openDropzone,
   } = dropzone;
+  const { values } = useFormikContext<EditorValues>();
   const { themeColors } = useTheme();
 
   const { channelId, dmId } = useParams();
@@ -531,7 +529,7 @@ function Editor({
               opacity: 0.7;
             }
             .ql-snow.ql-toolbar {
-              background-color: ${createReportbox 
+              background-color: ${values.createReportbox 
                 ? themeColors?.brightYellow 
                 : themeColors?.background};
               border-color: ${isDragActive
@@ -601,8 +599,6 @@ function Editor({
         />
         <FileViewer files={files} setFiles={setFiles} />
         <CustomToolbar
-          createReportbox={createReportbox}
-          setFieldValue={setFieldValue}
           isSubmitting={isSubmitting}
           errors={errors}
           isFiles={!!files?.length}
