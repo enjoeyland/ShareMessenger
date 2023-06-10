@@ -7,11 +7,12 @@ API_URL = 'http://localhost:4001'
 
 
 class User:
-    def __init__(self) -> None:
-        import private
+    import private
+
+    def __init__(self, email=private.EMAIL, password=private.PASSWORD) -> None:
         r = requests.post(f'{GQL_SERVER}/auth/login',
-                          json={"email": private.EMAIL,
-                                "password": private.PASSWORD},
+                          json={"email": email,
+                                "password": password},
                           verify=False)
 
         if __debug__:
@@ -112,16 +113,3 @@ class Channel:
 
     def getAnnouncementPublishers(self) -> List[str]:
         return self._data["announcementPublishers"]
-
-# create channel
-# r = requests.post(f'{API_URL}/channels/',
-#                 headers={
-#                     **authorization_header
-#                 },
-#                 json={
-#                     "name": "announcement",
-#                     "details": "",
-#                     "workspaceId": workspaceId,
-#                 },
-#                 verify=False)
-# print(r.text)
