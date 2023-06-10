@@ -4,6 +4,7 @@
         "subscribe",
         "announce",
         "filter",
-        "report"
+        "report",
+        "scheduler"
     ]
 }

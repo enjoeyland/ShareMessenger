@@ -62,7 +62,7 @@ export function useMessagesByChat(
   }, [dataPush]);
 
   return {
-    value: [...messages].filter((m) => !m.isDeleted).sort(compareDate),
+    value: [...messages].filter((m) => !m.isDeleted).filter((m) => new Date().getTime() - new Date(m.createdAt).getTime() > 0).sort(compareDate),
     loading,
   };
 }
