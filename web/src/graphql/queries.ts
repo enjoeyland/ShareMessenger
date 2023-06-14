@@ -82,6 +82,7 @@ export const LIST_MESSAGES = gql`
       announcementChannelId
       reportId
       reports
+      showAt
     }
   }
 `;

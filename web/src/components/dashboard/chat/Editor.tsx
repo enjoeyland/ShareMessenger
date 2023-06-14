@@ -52,6 +52,10 @@ export interface EditorValues {
   text: string,
   createReportbox: boolean,
   isRepeat: boolean,
+  startDate: any,
+  endDate: any,
+  time: any,
+  period: any,
 }
 
 export default function Editor() {
@@ -141,6 +145,10 @@ export default function Editor() {
     text: "",
     createReportbox: false,
     isRepeat: false,
+    startDate: null,
+    endDate: null,
+    time: null,
+    period: 1,
  };
 
   return (
@@ -155,10 +163,10 @@ export default function Editor() {
           initialValues={initialValues}
           validate={validate}
           enableReinitialize
-          onSubmit={async ({ text, createReportbox }, { setSubmitting, resetForm }) => {
+          onSubmit={async ( values, { setSubmitting, resetForm }) => {
             setSubmitting(true);
             try {
-              const messageId = uuidv4();
+              let messageId = uuidv4();
               const realText = editor?.getText() as string | null | undefined;
               if (!realText?.trim() && !files?.length) return;
 
@@ -170,20 +178,45 @@ export default function Editor() {
                   files[0]
                 );
               }
-
-              await postData("/messages", {
-                objectId: messageId,
-                text: realText?.trim().length ? text : "",
-                chatId: channelId || dmId,
-                workspaceId,
-                ...(files?.length && {
-                  fileName: files[0]?.name,
-                  filePath,
-                }),
-                chatType: channelId ? "Channel" : "Direct",
-                isReportBox: createReportbox,
-                reportId: reportBox?.objectId || null,
-              });
+              if (values.isRepeat && values.time && values.startDate && values.endDate) {
+                var onlyTime = ((values.time.getHours()*60 +  values.time.getMinutes())*60 + values.time.getSeconds()) * 1000
+                var startTime = values.startDate.getTime() + onlyTime;
+                var endTime = values.endDate.getTime() + onlyTime;
+                for (let time = startTime; time <= endTime; time += Math.round(values.period * 24 * 60 * 60 * 1000)) {
+                  if (time < new Date().getTime()) {
+                    continue;
+                  }
+                  await postData("/messages", {
+                    objectId: messageId,
+                    text: realText?.trim().length ? values.text : "",
+                    chatId: channelId || dmId,
+                    workspaceId,
+                    ...(files?.length && {
+                      fileName: files[0]?.name,
+                      filePath,
+                    }),
+                    chatType: channelId ? "Channel" : "Direct",
+                    isReportBox: values.createReportbox,
+                    reportId: reportBox?.objectId || null,
+                    showAt: new Date(time).toString(),
+                  });
+                  messageId = uuidv4();
+                }
+              } else {
+                await postData("/messages", {
+                  objectId: messageId,
+                  text: realText?.trim().length ? values.text : "",
+                  chatId: channelId || dmId,
+                  workspaceId,
+                  ...(files?.length && {
+                    fileName: files[0]?.name,
+                    filePath,
+                  }),
+                  chatType: channelId ? "Channel" : "Direct",
+                  isReportBox: values.createReportbox,
+                  reportId: reportBox?.objectId || null,
+                });
+              }
               const el = document.getElementById("messages")!;
               el.scrollTo(el.scrollHeight, 0);
               setReportBox(null);

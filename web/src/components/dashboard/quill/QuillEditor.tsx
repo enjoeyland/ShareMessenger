@@ -518,6 +518,12 @@ function Editor({
     }
     return () => clearInterval(interval);
   }, [isTyping]);
+  const options = [
+    { value: '1', label: '1 day' },
+    { value: '7', label: '1 week'},
+    { value: '30', label: '1 month'},
+    { value: '0.0416', label: '1 hour'},
+  ];
 
   return (
     <div className="flex flex-col w-full">
@@ -614,15 +620,15 @@ function Editor({
         {values.createReportbox && values.isRepeat &&
           <div className="flex items-center rounded-sm m-1 ml-2 p-2 border-2" style={{borderColor:"#0b1140"}}>
             <div className="font-bold text-lgmr-1 th-color-for max-w-sm truncate">
-              period: 
+              period:
             </div>
-            <Dropdown className="" options={['1 day', '1 weak', '1 month']} onChange={(option)=>{}} value={'1 day'} placeholder="Select an option" />
-            <DatePicker className="ml-2" label="start date" onChange={(date)=>{}}/>
+            <Dropdown options={options} onChange={(period)=>{setFieldValue("period", parseFloat(period.value));}} value={options[0]} placeholder="Select an option"/>
+            <DatePicker label="start date" onChange={(date)=>{setFieldValue("startDate", date);}}/>
             <div className="font-bold text-lgmr-1 th-color-for max-w-sm truncate">
               ~
             </div>
-            <DatePicker className="ml-2" label="end date" onChange={(date)=>{}}/> 
-            <TimePicker className="ml-4" label="time" onChange={(time)=>{}}/>           
+            <DatePicker label="end date" onChange={(date)=>{setFieldValue("endDate", date);}}/> 
+            <TimePicker label="time" onChange={(time)=>{setFieldValue("time", time);}}/>           
           </div>
         }
         <CustomToolbar
