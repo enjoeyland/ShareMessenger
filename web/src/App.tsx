@@ -30,6 +30,8 @@ import { Helmet } from "react-helmet-async";
 import { Toaster } from "react-hot-toast";
 import { useRoutes } from "react-router-dom";
 import routes from "routes";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 
 function App() {
   const content = useRoutes(routes);
@@ -125,8 +127,10 @@ function App() {
                           <ReactionsProvider>
                             <FilterProvider>
                               <RegisterMessageProvider>
-                                <Toaster position="top-center" />
-                                <WideScreen>{content}</WideScreen>
+                                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                  <Toaster position="top-center" />
+                                  <WideScreen>{content}</WideScreen>
+                                </LocalizationProvider>
                               </RegisterMessageProvider>
                             </FilterProvider>
                           </ReactionsProvider>

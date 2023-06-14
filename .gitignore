@@ -6,4 +6,5 @@ scripts
 
 #docker data
 data
+backup
 examples/docker-compose-https/data/

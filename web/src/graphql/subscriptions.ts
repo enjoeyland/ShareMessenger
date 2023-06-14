@@ -130,6 +130,7 @@ export const MESSAGE = gql`
       announcementChannelId
       reportId
       reports
+      showAt
     }
   }
 `;

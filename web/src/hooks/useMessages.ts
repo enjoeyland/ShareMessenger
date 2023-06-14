@@ -4,7 +4,7 @@ import * as subscriptions from "graphql/subscriptions";
 import { useEffect, useState } from "react";
 
 function compareDate(a: any, b: any) {
-  return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+  return new Date(b.showAt).getTime() - new Date(a.showAt).getTime();
 }
 
 export function useMessagesByChat(
@@ -62,7 +62,7 @@ export function useMessagesByChat(
   }, [dataPush]);
 
   return {
-    value: [...messages].filter((m) => !m.isDeleted).sort(compareDate),
+    value: [...messages].filter((m) => !m.isDeleted).filter((m) => new Date().getTime() - new Date(m.showAt).getTime() >= 0).sort(compareDate),
     loading,
   };
 }

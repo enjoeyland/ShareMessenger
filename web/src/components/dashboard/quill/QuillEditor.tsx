@@ -5,7 +5,8 @@ import {
   PhotographIcon,
   PlayIcon,
   XIcon,
-  InboxInIcon
+  InboxInIcon,
+  RefreshIcon
 } from "@heroicons/react/outline";
 import { PaperAirplaneIcon } from "@heroicons/react/solid";
 import Spinner from "components/Spinner";
@@ -27,6 +28,10 @@ import classNames from "utils/classNames";
 import hexToRgbA from "utils/hexToRgbA";
 import { useFormikContext } from "formik";
 import type { EditorValues } from "components/dashboard/chat/Editor";
+import Dropdown from 'react-dropdown';
+import 'react-dropdown/style.css';
+import { DatePicker, TimePicker } from "@mui/x-date-pickers";
+import dayjs from "dayjs";
 
 
 function EmojiDropdown({
@@ -226,6 +231,14 @@ function CustomToolbar({
         <button className="ql-link" />
       </div>
       <div className="ml-auto flex items-center space-x-2">
+        {values.createReportbox && 
+          <RefreshIcon 
+            className="h-5 w-5 cursor-pointer th-color-for"
+            onClick={() => {
+              setFieldValue("isRepeat", !values.isRepeat);
+            }}
+          />
+        }
         <InboxInIcon
           className="h-5 w-5 cursor-pointer th-color-for"
           onClick={() => {
@@ -505,6 +518,12 @@ function Editor({
     }
     return () => clearInterval(interval);
   }, [isTyping]);
+  const options = [
+    { value: '1', label: '1 day' },
+    { value: '7', label: '1 week'},
+    { value: '30', label: '1 month'},
+    { value: '0.0416', label: '1 hour'},
+  ];
 
   return (
     <div className="flex flex-col w-full">
@@ -598,6 +617,20 @@ function Editor({
           ref={editorRef}
         />
         <FileViewer files={files} setFiles={setFiles} />
+        {values.createReportbox && values.isRepeat &&
+          <div className="flex items-center rounded-sm m-1 ml-2 p-2 border-2" style={{borderColor:"#0b1140"}}>
+            <div className="font-bold text-lgmr-1 th-color-for max-w-sm truncate">
+              period:
+            </div>
+            <Dropdown options={options} onChange={(period)=>{setFieldValue("period", parseFloat(period.value));}} value={options[0]} placeholder="Select an option"/>
+            <DatePicker label="start date" onChange={(date)=>{setFieldValue("startDate", date);}}/>
+            <div className="font-bold text-lgmr-1 th-color-for max-w-sm truncate">
+              ~
+            </div>
+            <DatePicker label="end date" onChange={(date)=>{setFieldValue("endDate", date);}}/> 
+            <TimePicker label="time" onChange={(time)=>{setFieldValue("time", time);}}/>           
+          </div>
+        }
         <CustomToolbar
           isSubmitting={isSubmitting}
           errors={errors}

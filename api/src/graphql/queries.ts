@@ -136,6 +136,7 @@ export const GET_MESSAGE = gql`
       announcementChannelId
       reportId
       reports
+      showAt
     }
   }
 `;
@@ -168,6 +169,7 @@ export const LIST_MESSAGES = gql`
       announcementChannelId
       reportId
       reports
+      showAt
     }
   }
 `;

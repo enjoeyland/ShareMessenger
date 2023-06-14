@@ -1,115 +1,148 @@
 import json
 import requests
 from typing import List
+import private
 
 GQL_SERVER = 'http://localhost:4000'
 API_URL = 'http://localhost:4001'
 
 
-class User:
-    import private
-
+class ShareMessenger:
     def __init__(self, email=private.EMAIL, password=private.PASSWORD) -> None:
-        r = requests.post(f'{GQL_SERVER}/auth/login',
-                          json={"email": email,
-                                "password": password},
-                          verify=False)
+        self.email = email
+        self.password = password
+        self.user = self.User(self)
+        self.authorization_header = self.user.getAuthorizationHeader()
+        assert self.authorization_header
+        self.workspace = self.Workspace(self)
 
+    class User:
+        def __init__(self, sharemessenger) -> None:
+            self._sm = sharemessenger
+            r = requests.post(f'{GQL_SERVER}/auth/login',
+                              json={"email": self._sm.email,
+                                    "password": self._sm.password},
+                              verify=False)
+
+            if __debug__:
+                print(r.text)
+            self._data = json.loads(r.text)
+
+        def getUserId(self) -> str:
+            return self._data["uid"]
+
+        def getAuthorizationHeader(self) -> str:
+            return {"authorization": f"Bearer {self._data['idToken']}"}
+
+    def graphqlQuery(self, body) -> dict:
+        r = requests.post(f'{GQL_SERVER}/graphql/',
+                          headers=self.authorization_header,
+                          json={
+                              "query": body
+                          },
+                          verify=False)
         if __debug__:
             print(r.text)
-        self._data = json.loads(r.text)
+        return json.loads(r.text)["data"]
 
-    def getUserId(self) -> str:
-        return self._data["uid"]
+    class Workspace:
+        def __init__(self, sharemessenger) -> None:
+            self._sm = sharemessenger
+            self._list = self._sm.graphqlQuery("""{
+                listWorkspaces {
+                    name
+                    objectId
+                    channelId
+                    members
+                }
+            }""")["listWorkspaces"]
+            self.select(None)
 
-    def getAuthorizationHeader(self) -> str:
-        return {"authorization": f"Bearer {self._data['idToken']}"}
+        def getNameList(self) -> List[str]:
+            return list(map(lambda x: x["name"], self._list))
 
+        def select(self, name):
+            if not name:
+                self._data = self._list[0]
+                return self
+            for w in self._list:
+                if name == w["name"]:
+                    self._data = w
+                    break
+            else:
+                raise Exception(f"There is such a workspace name {name}.")
+            return self
 
-authorization_header = User().getAuthorizationHeader()
-assert authorization_header
+        def getName(self) -> str:
+            return self._data["name"]
 
+        def getId(self) -> str:
+            return self._data["objectId"]
 
-def graphqlQuery(body) -> dict:
-    r = requests.post(f'{GQL_SERVER}/graphql/',
-                      headers=authorization_header,
-                      json={
-                          "query": body
-                      },
-                      verify=False)
-    if __debug__:
-        print(r.text)
-    return json.loads(r.text)["data"]
+        def getGeneralChannelId(self) -> str:
+            return self._data["channelId"]
 
+    def getChannel(self, workspaceId):
+        self.channel = self.Channel(self, workspaceId)
+        return self.channel
 
-class Workspace:
-    def __init__(self, name=None) -> None:
-        self._list = graphqlQuery("""{
-            listWorkspaces {
-                name
-                objectId
-                channelId
-                members
-            }
-        }""")["listWorkspaces"]
-        self.select(name)
+    class Channel:
+        def __init__(self, sharemessenger, workspaceId) -> None:
+            self._sm = sharemessenger
+            self.workspaceId = workspaceId
+            self.refresh()
+            self.select(None)
 
-    def getNameList(self) -> List[str]:
-        return list(map(lambda x: x["name"], self._list))
+        def refresh(self):
+            self._list = self._sm.graphqlQuery(f"""{{
+                listChannels(workspaceId: "{self.workspaceId}") {{
+                    name
+                    objectId
+                    announcementSubscribers
+                    announcementPublishers
+                }}
+            }}""")["listChannels"]
 
-    def select(self, name):
-        for w in self._list:
-            if name == w["name"]:
-                self._data = w
-                break
-        else:
-            self._data = self._list[0]
-        assert self._data
-        return self
+        def getNameList(self) -> List[str]:
+            return list(map(lambda x: x["name"], self._list))
 
-    def getName(self) -> str:
-        return self._data["name"]
+        def create(self, name):
+            if not name:
+                return
+            r = requests.post(f'{API_URL}/channels/',
+                              headers=self._sm.authorization_header,
+                              json={
+                                  "name": name,
+                                  "workspaceId": self.workspaceId,
+                              },
+                              verify=False)
+            if __debug__:
+                print(r.text)
 
-    def getId(self) -> str:
-        return self._data["objectId"]
+        def select(self, name, create=False):
+            if not name:
+                self._data = self._list[0]
+                return self
+            for w in self._list:
+                if name == w["name"]:
+                    self._data = w
+                    return self
+            else:
+                if create:
+                    self.create(name)
+                    self.refresh()
+                    return self.select(name)
+                else:
+                    raise Exception(f"There is such a channel name {name}.")
 
-    def getGeneralChannelId(self) -> str:
-        return self._data["channelId"]
+        def getName(self) -> str:
+            return self._data["name"]
 
+        def getId(self) -> str:
+            return self._data["objectId"]
 
-class Channel:
-    def __init__(self, workspaceId, name=None) -> None:
-        self._list = graphqlQuery(f"""{{
-            listChannels(workspaceId: "{workspaceId}") {{
-                name
-                objectId
-                announcementSubscribers
-                announcementPublishers
-            }}
-        }}""")["listChannels"]
-        self.select(name)
+        def getAnnouncementSubscribers(self) -> List[str]:
+            return self._data["announcementSubscribers"]
 
-    def getNameList(self) -> List[str]:
-        return list(map(lambda x: x["name"], self._list))
-
-    def select(self, name):
-        for w in self._list:
-            if name == w["name"]:
-                self._data = w
-                break
-        else:
-            self._data = self._list[0]
-        assert self._data
-        return self
-
-    def getName(self) -> str:
-        return self._data["name"]
-
-    def getId(self) -> str:
-        return self._data["objectId"]
-
-    def getAnnouncementSubscribers(self) -> List[str]:
-        return self._data["announcementSubscribers"]
-
-    def getAnnouncementPublishers(self) -> List[str]:
-        return self._data["announcementPublishers"]
+        def getAnnouncementPublishers(self) -> List[str]:
+            return self._data["announcementPublishers"]
