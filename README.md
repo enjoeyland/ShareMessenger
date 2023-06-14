@@ -1,6 +1,6 @@
 ## Overview
 
-ShareMessenger is an open-source alternative communication platform.
+ShareMessenger aims to provide a convenient sharing function by reflecting the structure of a community in the chat system. In this project, the chat system establishes a notification relationship between chat rooms with the subscribe function between chat rooms. It implements a notification function between chat rooms that transmits notification messages, a reporting function that induces sharing among chat room members, and a filtering function that shows messages according to message types.
 
 ## Web Installation
 
