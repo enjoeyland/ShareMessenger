@@ -41,6 +41,7 @@ export const createMessage = async (
       objectId: customObjectId,
       isReportBox,
       reportId,
+      showAt
     } = req.body;
     const { uid } = res.locals;
 
@@ -143,6 +144,7 @@ export const createMessage = async (
           announcementChannelId: null,
           reportId: isReportBox ? messageId : reportId || null, 
           reports: [],
+          ...(showAt && { showAt: showAt}),
         },
       })
     );
