@@ -24,12 +24,12 @@ docker-compose up -d
 
 ## Report Feature
 
-<img src="./image/report%20feature.png">
+<img src="./image/report_feature.png">
 
 ## Report Feature
 
-<img src="./image/filter%20feature.png">
+<img src="./image/filter_feature.png">
 
 ## Schedular Feature
 
-<img src="./image/schedular%20feature.png">
+<img src="./image/schedular_feature.png">
